@@ -1,0 +1,146 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Raleway", sans-serif;
+}
+.productPageWrapper {
+  height: calc(100vh - 240px);
+  margin: 80px 219px 80px 100px;
+}
+.productContainer {
+  height: 100%;
+  padding-top: 10px;
+  display: flex;
+  /* justify-content: space-between; */
+}
+.productContainerRight {
+  display: flex;
+  flex-direction: column;
+  width: 292px;
+  justify-content: space-between;
+  height: 100%;
+  /* align-items: flex-end; */
+}
+.productContainerLeft {
+  height: 100%;
+  width: 80px;
+  margin-right: 40px;
+}
+
+.smallImage {
+  margin-bottom: 20px;
+  width: 100%;
+  height: 80px;
+  cursor: pointer;
+}
+
+.productContainerCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 610px;
+  height: 100%;
+  /* background-color: #25d366; */
+  margin-right: 100px;
+}
+.mainProductImg {
+  object-fit: fill;
+  object-fit: contain;
+  /* width: 100%; */
+  /* height: 100%; */
+}
+
+.productTitle {
+  font-weight: bold;
+  line-height: 1.5;
+  font-size: 30px;
+}
+.productProductTitle {
+  text-align: left;
+}
+.productTitle span {
+  font-weight: lighter;
+}
+
+.productPrice1 {
+  /* margin: 5px 0; */
+  font-weight: bold;
+  font-size: 18px;
+}
+.productPrice2 {
+  /* margin: 5px 0; */
+  font-weight: bold;
+  font-size: 24px;
+}
+.productSizes {
+  display: flex;
+  flex-direction: column;
+}
+.sizeContainer {
+  display: flex;
+}
+.productSize {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  width: 63px;
+  /* padding: 7px; */
+  font-size: 16px;
+  margin-right: 15px;
+  border: 1px solid black;
+}
+.sizeText {
+  font-weight: bold;
+}
+.productAdd,
+.productRemove,
+.productQuantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10px;
+  width: 10px;
+  padding: 7px;
+  margin-right: 15px;
+  border: 1px solid black;
+  font-size: 25px;
+}
+.productQuantity {
+  border: none;
+  font-size: medium;
+}
+.productImg {
+  width: 120px;
+  height: 120px;
+}
+.productTotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+.productBtn {
+  width: 100%;
+}
+.addToCart {
+  width: 100%;
+  flex: 1;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+  cursor: pointer;
+  background-color: #25d366;
+  color: white;
+  width: 100%;
+}
+
+.addToCart:hover {
+  color: black;
+}
+.productDesc {
+  font-family: "Roboto", sans-serif;
+
+  font-size: 14px;
+}
