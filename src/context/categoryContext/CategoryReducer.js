@@ -3,15 +3,15 @@ const CategoryReducer = (state, action) => {
     // CATEGORY REDUCER
     case "ALL_CAT":
       return {
-        category: "ALL",
+        category: action.payload,
       };
     case "TECH_CAT":
       return {
-        category: "TECH",
+        category: action.payload,
       };
     case "CLOTH_CAT":
       return {
-        category: "CLOTHES",
+        category: action.payload,
       };
 
     default:

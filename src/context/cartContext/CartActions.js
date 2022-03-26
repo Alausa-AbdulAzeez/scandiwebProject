@@ -3,8 +3,7 @@ export const addProduct = ({ product, price, quantity }) => ({
   // payload: { product },
   payload: { product, price, quantity },
 });
-export const removeProduct = (product, price, quantity) => ({
+export const removeProduct = ({ product, price, quantity }) => ({
   type: "REMOVE_PRODUCT",
   payload: { product, price, quantity },
-  // payload: { product, price, quantity },
 });

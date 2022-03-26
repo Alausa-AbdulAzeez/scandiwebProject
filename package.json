@@ -15,11 +15,15 @@
     "@testing-library/user-event": "^13.2.1",
     "apollo-boost": "^0.4.9",
     "graphql": "^16.3.0",
+    "html-parse-stringify": "^3.0.1",
+    "html-react-parser": "^1.4.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
+    "react-simple-image-slider": "^2.4.1",
+    "react-slideshow-image": "^3.7.0",
     "web-vitals": "^2.1.0"
   },
   "scripts": {

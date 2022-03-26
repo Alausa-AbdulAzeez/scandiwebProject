@@ -23,6 +23,15 @@ import {
   toRub,
   toUsd,
 } from "../../context/currencyChangeContext/CurrencyActions";
+import { Link } from "react-router-dom";
+import {
+  addProduct,
+  removeProduct,
+} from "../../context/cartContext/CartActions";
+import {
+  decreaseProductAmount,
+  increaseProductAmount,
+} from "../../context/quantityContext/QuantityActions";
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -30,8 +39,14 @@ export default class Navbar extends Component {
 
     this.state = {
       quantity: 1,
+      activeList: {
+        allActive: "",
+        techActive: "",
+        clothActive: "",
+      },
 
       showMiniCart: false,
+      category: null,
     };
   }
   static contextType = GlobalContext;
@@ -44,47 +59,120 @@ export default class Navbar extends Component {
   addActive = (e) => {
     e.target.classList.add("active");
   };
-  handleQuantity = (type) => {
+  handleQuantity = (singleProduct, type, ProductQuantity) => {
     if (type === "dec") {
-      if (this.state.quantity > 1) {
-        this.setState({ quantity: this.state.quantity - 1 });
+      if (ProductQuantity > 0) {
+        // this.context.quantityDispatch(decreaseProductAmount());
+        this.context.cartDispatch(
+          removeProduct({
+            product: singleProduct,
+            price: singleProduct.prices[0].amount,
+            quantity: 1,
+          })
+        );
       }
     }
     if (type === "inc") {
-      this.setState({ quantity: this.state.quantity + 1 });
+      // this.setState({ quantity: this.state.quantity + 1 });
+      this.context.quantityDispatch(increaseProductAmount());
+      // console.log(ProductQuantity);
+      this.context.cartDispatch(
+        addProduct({
+          product: singleProduct,
+          price: singleProduct.prices[0].amount,
+          quantity: 1,
+        })
+      );
     }
   };
 
   handleClick = (e) => {
     if (e.target.innerText === "ALL") {
-      this.removeActive();
-      this.addActive(e);
-      this.context.categoryDispatch(allCat());
+      this.setState({
+        activeList: {
+          allActive: "active",
+          techActive: "",
+          clothActive: "",
+        },
+      });
+
+      this.context.categoryDispatch(allCat("ALL"));
     }
     if (e.target.innerText === "TECH") {
-      this.removeActive();
-      this.addActive(e);
-      this.context.categoryDispatch(techCat());
+      this.setState({
+        activeList: {
+          allActive: "",
+          techActive: "active",
+          clothActive: "",
+        },
+      });
+
+      this.context.categoryDispatch(techCat("TECH"));
     }
     if (e.target.innerText === "CLOTHES") {
-      this.removeActive();
-      this.addActive(e);
-      this.context.categoryDispatch(clothCat());
+      this.setState({
+        activeList: {
+          allActive: "",
+          techActive: "",
+          clothActive: "active",
+        },
+      });
+
+      this.context.categoryDispatch(clothCat("CLOTHES"));
     }
-    // this.setState({ category: e.target.innerText });
   };
 
   showMiniCart = (e) => {
-    console.log(e);
     this.setState({ showMiniCart: !this.state.showMiniCart });
   };
 
+  componentDidMount() {
+    let category = this.context.categoryState.category;
+    if (category === "ALL") {
+      this.setState({
+        activeList: {
+          allActive: "active",
+          techActive: "",
+          clothActive: "",
+        },
+      });
+    }
+    if (category === "TECH") {
+      this.setState({
+        activeList: {
+          allActive: "",
+          techActive: "active",
+          clothActive: "",
+        },
+      });
+    }
+    if (category === "CLOTHES") {
+      this.setState({
+        activeList: {
+          allActive: "",
+          techActive: "",
+          clothActive: "active",
+        },
+      });
+    }
+  }
+
   render() {
-    // console.log(this.context.category);
     const { currencyDispatch } = this.context;
     const { baseConverter, currency } = this.context.currencyState;
-    // const ab = this.context.cartState;
-    // console.log(ab);
+    const { category } = this.context.categoryState;
+    const { quantity, cart, total } = this.context.cartState;
+    const { ProductQuantity } = this.context.quantityState;
+    const dispContentSet = new Set(cart);
+    const dispContent = Array.from(dispContentSet);
+    // let dispContent = cart.filter(
+    //   (v, i, a) => a.findIndex((v2) => v2.attributes === v.attributes) === i
+    // );
+    // console.log(dispContent);
+
+    // console.log(cart);
+    // console.log(dispContent.size);
+    // localStorage.removeItem("cart");
 
     return (
       <>
@@ -92,15 +180,36 @@ export default class Navbar extends Component {
           <div className="navbar">
             <div className="navLeft">
               <ul>
-                <li className="navLeftList active" onClick={this.handleClick}>
-                  ALL
-                </li>
-                <li className="navLeftList" onClick={this.handleClick}>
-                  TECH
-                </li>
-                <li className="navLeftList" onClick={this.handleClick}>
-                  CLOTHES
-                </li>
+                <Link to={`/`}>
+                  <li
+                    className={`navLeftList ${
+                      this.state.activeList.allActive === "active" && "active"
+                    }`}
+                    onClick={this.handleClick}
+                  >
+                    ALL
+                  </li>
+                </Link>
+                <Link to={"/"}>
+                  <li
+                    className={`navLeftList ${
+                      this.state.activeList.techActive === "active" && "active"
+                    }`}
+                    onClick={this.handleClick}
+                  >
+                    TECH
+                  </li>
+                </Link>
+                <Link to={"/"}>
+                  <li
+                    className={`navLeftList ${
+                      this.state.activeList.clothActive === "active" && "active"
+                    }`}
+                    onClick={this.handleClick}
+                  >
+                    CLOTHES
+                  </li>
+                </Link>
               </ul>
             </div>
             <div className="navCenter">
@@ -163,184 +272,164 @@ export default class Navbar extends Component {
                   className="cartIcon"
                   onClick={this.showMiniCart}
                 />
-                <span className="cartIconBadge">3</span>
+                <span className="cartIconBadge">{cart.length}</span>
                 <div className="miniCartWrapper">
                   <div className="cartOverlay">
                     <div className="miniCart">
                       <div className="miniCartTitle">
-                        My Bag, <span>2 items</span>
+                        My Bag, <span>{cart.length} item(s)</span>
                       </div>
                       <div className="miniCartContents">
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
+                        {dispContent.length > 0 ? (
+                          dispContent.map((singleProduct) => {
+                            return (
                               <div
-                                className="miniCartAdd"
-                                onClick={() => this.handleQuantity("inc")}
+                                className="miniCartContent"
+                                key={
+                                  new Date().valueOf().toString(36) +
+                                  Math.random().toString(36).substr(2)
+                                }
                               >
-                                +
+                                <div className="contentLeft">
+                                  {singleProduct.name.split(" ").slice(0, 1)}
+                                  <br />
+                                  <span>
+                                    {singleProduct.name
+                                      .split(" ")
+                                      .slice(1)
+                                      .join(" ")}
+                                  </span>
+                                  <div className="miniCartProductPrice">
+                                    {currency}
+                                    {(
+                                      singleProduct.prices[0].amount *
+                                      baseConverter
+                                    ).toFixed(2)}
+                                  </div>
+                                  <div className="miniCartProductSizes">
+                                    {singleProduct.attributes.length > 0 &&
+                                      singleProduct.attributes.map(
+                                        (attribute) => {
+                                          if (
+                                            Object.keys(attribute)[0] ===
+                                            "color"
+                                          ) {
+                                            return (
+                                              <div
+                                                className=" selecTedColorWrapper"
+                                                key={
+                                                  new Date()
+                                                    .valueOf()
+                                                    .toString(36) +
+                                                  Math.random()
+                                                    .toString(36)
+                                                    .substr(2)
+                                                }
+                                              >
+                                                <div
+                                                  className="miniProductDisplayColor"
+                                                  style={{
+                                                    backgroundColor: `${Object.values(
+                                                      attribute
+                                                    )}`,
+                                                  }}
+                                                  key={
+                                                    new Date()
+                                                      .valueOf()
+                                                      .toString(36) +
+                                                    Math.random()
+                                                      .toString(36)
+                                                      .substr(2)
+                                                  }
+                                                ></div>
+                                              </div>
+                                            );
+                                          } else {
+                                            return (
+                                              <div
+                                                className="attributesWrapper"
+                                                key={
+                                                  new Date()
+                                                    .valueOf()
+                                                    .toString(36) +
+                                                  Math.random()
+                                                    .toString(36)
+                                                    .substr(2)
+                                                }
+                                              >
+                                                <p className="attributeTitle">
+                                                  {Object.keys(attribute)}
+                                                </p>
+
+                                                <div className="miniCartProductSize">
+                                                  {Object.values(attribute)}
+                                                </div>
+                                              </div>
+                                            );
+                                          }
+                                        }
+                                      )}
+                                  </div>
+                                </div>
+                                <div className="contentRight">
+                                  <div className="quantitySet">
+                                    <div
+                                      className="miniCartAdd"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "inc",
+                                          ProductQuantity
+                                        )
+                                      }
+                                    >
+                                      +
+                                    </div>
+                                    <div className="miniCartQuantity">
+                                      {
+                                        cart.filter((v) => v === singleProduct)
+                                          .length
+                                      }
+                                    </div>
+                                    <div
+                                      className="miniCartRemove"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "dec",
+                                          ProductQuantity
+                                        )
+                                      }
+                                    >
+                                      -
+                                    </div>
+                                  </div>
+                                  <div className="miniCartImg">
+                                    <img
+                                      src={singleProduct.gallery[0]}
+                                      alt=""
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                              <div className="miniCartQuantity">
-                                {this.state.quantity}
-                              </div>
-                              <div
-                                className="miniCartRemove"
-                                onClick={() => this.handleQuantity("dec")}
-                              >
-                                -
-                              </div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://images-na.ssl-images-amazon.com/images/I/510VSJ9mWDL._SL1262_.jpg"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
-                              <div className="miniCartAdd">+</div>
-                              <div className="miniCartQuantity">1</div>
-                              <div className="miniCartRemove">-</div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://images-na.ssl-images-amazon.com/images/I/510VSJ9mWDL._SL1262_.jpg"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
-                              <div className="miniCartAdd">+</div>
-                              <div className="miniCartQuantity">1</div>
-                              <div className="miniCartRemove">-</div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://images-na.ssl-images-amazon.com/images/I/510VSJ9mWDL._SL1262_.jpg"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
-                              <div className="miniCartAdd">+</div>
-                              <div className="miniCartQuantity">1</div>
-                              <div className="miniCartRemove">-</div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://images-na.ssl-images-amazon.com/images/I/510VSJ9mWDL._SL1262_.jpg"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
-                              <div className="miniCartAdd">+</div>
-                              <div className="miniCartQuantity">1</div>
-                              <div className="miniCartRemove">-</div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://images-na.ssl-images-amazon.com/images/I/510VSJ9mWDL._SL1262_.jpg"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="miniCartContent">
-                          <div className="contentLeft">
-                            <div className="miniCartProductTitle">
-                              Apollo running short
-                            </div>
-                            <div className="miniCartProductPrice">$10.00</div>
-                            <div className="miniCartProductSizes">
-                              <div className="miniCartProductSize">S</div>
-                              <div className="miniCartProductSize">M</div>
-                            </div>
-                          </div>
-                          <div className="contentRight">
-                            <div className="quantitySet">
-                              <div className="miniCartAdd">+</div>
-                              <div className="miniCartQuantity">1</div>
-                              <div className="miniCartRemove">-</div>
-                            </div>
-                            <div className="miniCartImg">
-                              <img
-                                src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-12-pro-family-hero?wid=940&amp;hei=1112&amp;fmt=jpeg&amp;qlt=80&amp;.v=1604021663000"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div>
+                            );
+                          })
+                        ) : (
+                          <div className="miniCartTotal">ABC</div>
+                        )}
                       </div>
                       <div className="miniCartFooter">
                         <div className="miniCartTotal">
                           <div className="totalText">Total</div>
-                          <div className="totalDigit">$100</div>
+                          <div className="totalDigit">
+                            {currency}
+                            {(total * baseConverter).toFixed(2)}
+                          </div>
                         </div>
                         <div className="miniCartButtons">
-                          <div className="viewBag">VIEW BAG</div>
+                          <Link to={"/cart"} className="viewBag">
+                            <div>VIEW BAG</div>
+                          </Link>
                           <div className="checkOut">CHECKOUT</div>
                         </div>
                       </div>

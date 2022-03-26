@@ -19,7 +19,10 @@ export default class App extends Component {
       <ApolloProvider client={client}>
         <BrowserRouter>
           <Routes>
-            <Route exact path="/" element={<Home />} />
+            <Route path="/" element={<Home />} />
+            {/* <Route path="/clothes" element={<Home />} /> */}
+            {/* <Route path="/tech" element={<Home />} /> */}
+            {/* <Route path="/:cat" element={<Home />} /> */}
             <Route path="/:id" element={<Product />} />
             <Route path="/cart" element={<Cart />} />
           </Routes>

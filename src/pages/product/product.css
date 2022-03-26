@@ -3,6 +3,7 @@
   padding: 0;
   font-family: "Raleway", sans-serif;
 }
+
 .productPageWrapper {
   height: calc(100vh - 240px);
   margin: 80px 219px 80px 100px;
@@ -61,6 +62,9 @@
 .productTitle span {
   font-weight: lighter;
 }
+.variationTitle {
+  margin-bottom: 10px;
+}
 
 .productPrice1 {
   /* margin: 5px 0; */
@@ -68,6 +72,9 @@
   font-size: 18px;
 }
 .productPrice2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   /* margin: 5px 0; */
   font-weight: bold;
   font-size: 24px;
@@ -75,23 +82,49 @@
 .productSizes {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  /* min-height: 40%; */
+}
+
+.productSizes h5 {
+  margin-bottom: 5px;
 }
 .sizeContainer {
   display: flex;
 }
 .productSize {
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 45px;
-  width: 63px;
-  /* padding: 7px; */
+  height: 25px;
+  width: 43px;
+  width: 33%;
   font-size: 16px;
-  margin-right: 15px;
+  margin-bottom: 15px;
   border: 1px solid black;
+  margin-left: 10px;
 }
+
+/* .selectedWithUSB3ports {
+}
+.selectedTouchIDinkeyboard {
+}
+.selectedCapacity {
+} */
 .sizeText {
   font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.variationSizeText,
+.VariationSizeText {
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: capitalize;
+  margin-bottom: 5px;
+  margin-right: 10px;
 }
 .productAdd,
 .productRemove,
@@ -124,6 +157,17 @@
 .productBtn {
   width: 100%;
 }
+.addToCart:disabled {
+  cursor: not-allowed;
+  background-color: aliceblue;
+}
+
+/* .addToCart[disabled="false"] {
+  cursor: pointer;
+  background-color: #25d366;
+  color: white;
+  border: none;
+} */
 .addToCart {
   width: 100%;
   flex: 1;
@@ -132,15 +176,232 @@
   text-align: center;
   cursor: pointer;
   background-color: #25d366;
-  color: white;
+  color: #000;
   width: 100%;
+  outline: none;
+  border: none;
 }
 
 .addToCart:hover {
   color: black;
 }
+.loader {
+  border: 3px solid #f3f3f3; /* Light grey */
+  border-top: 3px solid #25d366; /* Blue */
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.defaultAddToCart {
+  width: 100%;
+  flex: 1;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+  cursor: pointer;
+  background-color: #25d366;
+  /* color: white; */
+  color: #000;
+  width: 100%;
+  outline: none;
+  /* border: 1px solid black; */
+  border: none;
+}
+.defaultAddToCart:hover {
+  color: white;
+}
 .productDesc {
   font-family: "Roboto", sans-serif;
 
   font-size: 14px;
+}
+.selectedSize,
+.selectedTouchIDinkeyboard,
+.selectedWithUSB3ports,
+.selectedCapacity {
+  color: white;
+  cursor: pointer;
+  background-color: #000;
+}
+.productSizeWrapper {
+  display: flex;
+  /* flex-direction: column; */
+  flex: 1;
+  justify-content: space-around;
+}
+.variationProductSizeWrapper {
+  display: flex;
+  margin-bottom: 15px;
+}
+.productCapacityWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.productCapacity {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  width: 63px;
+  font-size: 16px;
+  border: 1px solid black;
+}
+.variationProductSize {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 43px;
+  font-size: 16px;
+  border: 1px solid black;
+  margin-right: 10px;
+}
+.productColorWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 5px;
+  align-items: center;
+}
+.variationProductColorWrapper {
+  display: flex;
+  margin-right: 5px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.productDisplayColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 10px 0px #454647fb;
+  cursor: pointer;
+}
+.variationProductDisplayColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 10px 0px #454647fb;
+  cursor: pointer;
+}
+.selectedColor {
+  height: 35px;
+  width: 35px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.selectedColorWrapper,
+.variationSelecTedColorWrapper {
+  margin-right: 30px;
+}
+
+.productQuantitySet {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.productPageAdd,
+.productPageRemove,
+.productPageQuantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10px;
+  width: 10px;
+  padding: 7px;
+  margin-right: 15px;
+  border: 1px solid black;
+  font-size: 25px;
+}
+.productPageQuantity {
+  border: none;
+  font-size: medium;
+}
+.variationContainer {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.514);
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  z-index: -1;
+  top: -50%;
+  transition: all 0.5s ease-in-out; /*make it smooth*/
+  /* overflow-x: hidden; */
+}
+
+.variationContentContainer {
+  overflow-y: scroll;
+
+  width: 35%;
+  height: 70%;
+  background-color: #fff;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.variationContentContainer ::-webkit-scrollbar {
+  width: 5px;
+}
+.variationSet {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.variationQuantity {
+  align-items: center;
+}
+.containerTop {
+  display: flex;
+  justify-content: space-between;
+}
+
+.show {
+  /* -webkit-animation: anvil 1s cubic-bezier(0.38, 0.1, 0.36, 0.9) forwards; */
+  visibility: visible;
+  z-index: 200;
+  opacity: 1;
+  /* top: 30%; */
+  bottom: 0;
+  top: 0;
+  min-height: 100%;
+}
+.addVariation:disabled {
+  cursor: not-allowed;
+  background-color: aliceblue;
+}
+
+.addVariation {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  background-color: #25d366;
+  color: white;
+  border-radius: 10px;
+  outline: none;
+}
+
+.variationRemove,
+.variationAdd {
+  padding: 2px 7px;
 }
