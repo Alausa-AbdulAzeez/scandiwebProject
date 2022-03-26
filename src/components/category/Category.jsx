@@ -115,7 +115,6 @@ export class Category extends Component {
       } else {
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
-        console.log(ProductQuantity);
         this.context.cartDispatch(
           addProduct({
             product: singleProduct,
@@ -178,7 +177,6 @@ export class Category extends Component {
                           {product.attributes.length === 0 &&
                           cart.some((cartItem) => cartItem === product) ? (
                             <div className="quantitySet">
-                              {console.log(product)}
                               <div
                                 className="miniCartAdd"
                                 onClick={(e) =>
@@ -286,7 +284,6 @@ export class Category extends Component {
                               (cartItem) => cartItem === filteredProduct
                             ) ? (
                               <div className="quantitySet">
-                                {console.log(filteredProduct)}
                                 <div
                                   className="miniCartAdd"
                                   onClick={(e) =>

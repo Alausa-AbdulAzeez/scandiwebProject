@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import SimpleImageSlider from "react-simple-image-slider";
 import Navbar from "../../components/navbar/Navbar";
 import {
   addProduct,
@@ -6,6 +7,7 @@ import {
 } from "../../context/cartContext/CartActions";
 import { GlobalContext } from "../../context/Provider/Provider";
 import "./cart.css";
+<link rel="stylesheet" href="carousel.css" />;
 
 export default class Cart extends Component {
   constructor(props) {
@@ -13,18 +15,8 @@ export default class Cart extends Component {
 
     this.state = {
       product: null,
-      productInCart: null,
-      selectedProduct: this.product,
-      prodWatt: null,
-      id: window.location.href.split("/")[3],
-      disabled: true,
-      arr: [],
-      varArr: [],
-      att: [],
-      quantity: 1,
-      attArr: [],
       disabledRemove: false,
-      variationBtnDisabled: true,
+      clickedProduct: null,
     };
   }
 
@@ -56,6 +48,7 @@ export default class Cart extends Component {
           })
         );
       } else {
+        this.setState({ clickedProduct: singleProduct });
         this.context.cartDispatch(
           addProduct({
             product: singleProduct,
@@ -63,6 +56,10 @@ export default class Cart extends Component {
             quantity: 1,
           })
         );
+        this.setState({ disabledRemove: true });
+        setTimeout(() => {
+          this.setState({ disabledRemove: false });
+        }, 500);
       }
     }
   };
@@ -72,7 +69,6 @@ export default class Cart extends Component {
     const { quantity, cart } = this.context.cartState;
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
-    console.log(dispContent);
 
     return (
       <div>
@@ -148,7 +144,7 @@ export default class Cart extends Component {
                     </div>
                   </div>
                   <div className="contentRight">
-                    <div className="quantitySet">
+                    {/* <div className="quantitySet">
                       <button
                         disabled={this.state.disabledRemove}
                         className="variationRemove"
@@ -180,9 +176,95 @@ export default class Cart extends Component {
                       >
                         -
                       </button>
+                    </div> */}
+                    <div className="variationSet">
+                      {this.state.clickedProduct === cartItem ? (
+                        <button
+                          disabled={this.state.disabledRemove}
+                          className="variationAdd"
+                          onClick={() =>
+                            this.ProdhandleQuantity(
+                              cartItem,
+                              "inc",
+
+                              cart.filter((v) => v === cartItem).length
+                            )
+                          }
+                        >
+                          +
+                        </button>
+                      ) : (
+                        <button
+                          className="variationAdd"
+                          onClick={() =>
+                            this.ProdhandleQuantity(
+                              cartItem,
+                              "inc",
+
+                              cart.filter((v) => v === cartItem).length
+                            )
+                          }
+                        >
+                          +
+                        </button>
+                      )}
+
+                      <div className="variationQuantity">
+                        {this.state.disabledRemove ? (
+                          this.state.clickedProduct === cartItem ? (
+                            <div className="loader"></div>
+                          ) : (
+                            cart.filter((v) => v === cartItem).length
+                          )
+                        ) : (
+                          cart.filter((v) => v === cartItem).length
+                        )}
+                      </div>
+                      {this.state.clickedProduct === cartItem ? (
+                        <button
+                          disabled={this.state.disabledRemove}
+                          className="variationRemove"
+                          onClick={() =>
+                            this.ProdhandleQuantity(
+                              cartItem,
+                              "dec",
+
+                              cart.filter((v) => v === cartItem).length
+                            )
+                          }
+                        >
+                          -
+                        </button>
+                      ) : (
+                        <button
+                          className="variationRemove"
+                          onClick={() =>
+                            this.ProdhandleQuantity(
+                              cartItem,
+                              "dec",
+
+                              cart.filter((v) => v === cartItem).length
+                            )
+                          }
+                        >
+                          -
+                        </button>
+                      )}
                     </div>
                     <div className="mainCartImg">
-                      <img src={cartItem.gallery[0]} alt="" />
+                      <SimpleImageSlider
+                        width={200}
+                        height={200}
+                        images={cartItem.gallery}
+                        showBullets={true}
+                        showNavs={true}
+                        autoPlay={true}
+                        navStyle={{
+                          objectFit: "contain",
+                          cursor: "progress",
+                        }}
+                      />
+                      {/* <img src={cartItem.gallery[0]} alt="" /> */}
                     </div>
                   </div>
                 </div>

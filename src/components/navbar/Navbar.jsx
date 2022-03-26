@@ -417,9 +417,7 @@ export default class Navbar extends Component {
                                       {this.state.disabledRemove ? (
                                         this.state.clickedProduct ===
                                         singleProduct ? (
-                                          <div className="loader">
-                                            {console.log(singleProduct)}
-                                          </div>
+                                          <div className="loader"></div>
                                         ) : (
                                           cart.filter(
                                             (v) => v === singleProduct
@@ -479,7 +477,7 @@ export default class Navbar extends Component {
                             );
                           })
                         ) : (
-                          <div className="miniCartTotal">ABC</div>
+                          <div className="miniCartTotal">Cart is empty</div>
                         )}
                       </div>
                       <div className="miniCartFooter">

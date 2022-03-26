@@ -89,6 +89,7 @@
 .mainCartImg {
   width: 120px;
   height: 100%;
+  margin-left: 10px;
 }
 .mainCartTotal {
   display: flex;

@@ -144,7 +144,6 @@ export default class Product extends Component {
       this.setState({
         arr: [...this.state.arr, { color: value }],
       });
-      console.log(this.state.arr);
 
       if (product.attributes.length === this.state.arr.length + 1) {
         this.setState({ disabled: false });
@@ -521,9 +520,7 @@ export default class Product extends Component {
                                   {this.state.disabledRemove ? (
                                     this.state.clickedProduct ===
                                     singleProduct ? (
-                                      <div className="loader">
-                                        {console.log(singleProduct)}
-                                      </div>
+                                      <div className="loader"></div>
                                     ) : (
                                       cart.filter((v) => v === singleProduct)
                                         .length
