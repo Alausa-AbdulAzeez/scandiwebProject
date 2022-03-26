@@ -20,7 +20,6 @@
   width: 292px;
   justify-content: space-between;
   height: 100%;
-  /* align-items: flex-end; */
 }
 .productContainerLeft {
   height: 100%;
@@ -41,14 +40,11 @@
   justify-content: center;
   width: 610px;
   height: 100%;
-  /* background-color: #25d366; */
   margin-right: 100px;
 }
 .mainProductImg {
   object-fit: fill;
   object-fit: contain;
-  /* width: 100%; */
-  /* height: 100%; */
 }
 
 .productTitle {
@@ -67,7 +63,6 @@
 }
 
 .productPrice1 {
-  /* margin: 5px 0; */
   font-weight: bold;
   font-size: 18px;
 }
@@ -75,7 +70,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* margin: 5px 0; */
   font-weight: bold;
   font-size: 24px;
 }
@@ -83,7 +77,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* min-height: 40%; */
 }
 
 .productSizes h5 {
@@ -106,12 +99,6 @@
   margin-left: 10px;
 }
 
-/* .selectedWithUSB3ports {
-}
-.selectedTouchIDinkeyboard {
-}
-.selectedCapacity {
-} */
 .sizeText {
   font-weight: bold;
   font-size: 18px;
@@ -162,12 +149,6 @@
   background-color: aliceblue;
 }
 
-/* .addToCart[disabled="false"] {
-  cursor: pointer;
-  background-color: #25d366;
-  color: white;
-  border: none;
-} */
 .addToCart {
   width: 100%;
   flex: 1;
@@ -186,8 +167,8 @@
   color: black;
 }
 .loader {
-  border: 3px solid #f3f3f3; /* Light grey */
-  border-top: 3px solid #25d366; /* Blue */
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #25d366;
   border-radius: 50%;
   width: 10px;
   height: 10px;
@@ -211,11 +192,9 @@
   text-align: center;
   cursor: pointer;
   background-color: #25d366;
-  /* color: white; */
   color: #000;
   width: 100%;
   outline: none;
-  /* border: 1px solid black; */
   border: none;
 }
 .defaultAddToCart:hover {
@@ -236,7 +215,6 @@
 }
 .productSizeWrapper {
   display: flex;
-  /* flex-direction: column; */
   flex: 1;
   justify-content: space-around;
 }
@@ -346,12 +324,8 @@
   opacity: 0;
   z-index: -1;
   top: -50%;
-  transition: all 0.5s ease-in-out; /*make it smooth*/
-  /* overflow-x: hidden; */
+  transition: all 0.5s ease-in-out;
 }
-/* .variationContentContainer::-webkit-scrollbar {
-  width: 50px;
-} */
 
 /* width */
 .variationContentContainer::-webkit-scrollbar {
@@ -401,18 +375,16 @@
 }
 
 .show {
-  /* -webkit-animation: anvil 1s cubic-bezier(0.38, 0.1, 0.36, 0.9) forwards; */
   visibility: visible;
   z-index: 200;
   opacity: 1;
-  /* top: 30%; */
   bottom: 0;
   top: 0;
   min-height: 100%;
 }
 .addVariation:disabled {
   cursor: not-allowed;
-  background-color: aliceblue;
+  background-color: #25d3655b;
 }
 
 .addVariation {
@@ -424,6 +396,12 @@
   border-radius: 10px;
   outline: none;
   margin-bottom: 10px;
+}
+
+.variationRemove:disabled,
+.variationAdd:disabled {
+  cursor: not-allowed;
+  background-color: #25d36570;
 }
 
 .variationRemove,

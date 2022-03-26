@@ -4,12 +4,10 @@ import {
   faAngleDown,
   faCartShopping,
   faRefresh,
-  faShoppingBasket,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./navbar.css";
-import Category from "../category/Category";
-import { CategoryContext } from "../../context/categoryContext/CategoryContext";
+
 import {
   allCat,
   clothCat,
@@ -28,10 +26,7 @@ import {
   addProduct,
   removeProduct,
 } from "../../context/cartContext/CartActions";
-import {
-  decreaseProductAmount,
-  increaseProductAmount,
-} from "../../context/quantityContext/QuantityActions";
+import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -44,6 +39,8 @@ export default class Navbar extends Component {
         techActive: "",
         clothActive: "",
       },
+      clickedProduct: null,
+      disabledRemove: false,
 
       showMiniCart: false,
       category: null,
@@ -51,18 +48,23 @@ export default class Navbar extends Component {
   }
   static contextType = GlobalContext;
 
+  // Remove styling from links
   removeActive = () => {
     const activeList = document.querySelectorAll(".active");
     activeList.forEach((item) => item.classList.remove("active"));
   };
 
+  // Add styling to links
   addActive = (e) => {
     e.target.classList.add("active");
   };
+
+  // Modify product quantity
+
   handleQuantity = (singleProduct, type, ProductQuantity) => {
+    //  Decrease quantity
     if (type === "dec") {
       if (ProductQuantity > 0) {
-        // this.context.quantityDispatch(decreaseProductAmount());
         this.context.cartDispatch(
           removeProduct({
             product: singleProduct,
@@ -70,12 +72,15 @@ export default class Navbar extends Component {
             quantity: 1,
           })
         );
+        this.setState({ disabledRemove: true });
+        setTimeout(() => {
+          this.setState({ disabledRemove: false });
+        }, 500);
       }
     }
+    //  Increase quantity
     if (type === "inc") {
-      // this.setState({ quantity: this.state.quantity + 1 });
-      this.context.quantityDispatch(increaseProductAmount());
-      // console.log(ProductQuantity);
+      this.setState({ clickedProduct: singleProduct });
       this.context.cartDispatch(
         addProduct({
           product: singleProduct,
@@ -83,9 +88,14 @@ export default class Navbar extends Component {
           quantity: 1,
         })
       );
+      this.setState({ disabledRemove: true });
+      setTimeout(() => {
+        this.setState({ disabledRemove: false });
+      }, 500);
     }
   };
 
+  // Set current link
   handleClick = (e) => {
     if (e.target.innerText === "ALL") {
       this.setState({
@@ -122,6 +132,7 @@ export default class Navbar extends Component {
     }
   };
 
+  // Show miniCart
   showMiniCart = (e) => {
     this.setState({ showMiniCart: !this.state.showMiniCart });
   };
@@ -160,19 +171,10 @@ export default class Navbar extends Component {
   render() {
     const { currencyDispatch } = this.context;
     const { baseConverter, currency } = this.context.currencyState;
-    const { category } = this.context.categoryState;
-    const { quantity, cart, total } = this.context.cartState;
+    const { cart, total } = this.context.cartState;
     const { ProductQuantity } = this.context.quantityState;
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
-    // let dispContent = cart.filter(
-    //   (v, i, a) => a.findIndex((v2) => v2.attributes === v.attributes) === i
-    // );
-    // console.log(dispContent);
-
-    // console.log(cart);
-    // console.log(dispContent.size);
-    // localStorage.removeItem("cart");
 
     return (
       <>
@@ -372,37 +374,99 @@ export default class Navbar extends Component {
                                   </div>
                                 </div>
                                 <div className="contentRight">
-                                  <div className="quantitySet">
-                                    <div
-                                      className="miniCartAdd"
-                                      onClick={() =>
-                                        this.handleQuantity(
-                                          singleProduct,
-                                          "inc",
-                                          ProductQuantity
+                                  <div className="variationSet">
+                                    {this.state.clickedProduct ===
+                                    singleProduct ? (
+                                      <button
+                                        disabled={this.state.disabledRemove}
+                                        className="variationAdd"
+                                        onClick={() =>
+                                          this.handleQuantity(
+                                            singleProduct,
+                                            "inc",
+                                            ProductQuantity,
+
+                                            cart.filter(
+                                              (v) => v === singleProduct
+                                            ).length
+                                          )
+                                        }
+                                      >
+                                        +
+                                      </button>
+                                    ) : (
+                                      <button
+                                        className="variationAdd"
+                                        onClick={() =>
+                                          this.handleQuantity(
+                                            singleProduct,
+                                            "inc",
+                                            ProductQuantity,
+
+                                            cart.filter(
+                                              (v) => v === singleProduct
+                                            ).length
+                                          )
+                                        }
+                                      >
+                                        +
+                                      </button>
+                                    )}
+
+                                    <div className="variationQuantity">
+                                      {this.state.disabledRemove ? (
+                                        this.state.clickedProduct ===
+                                        singleProduct ? (
+                                          <div className="loader">
+                                            {console.log(singleProduct)}
+                                          </div>
+                                        ) : (
+                                          cart.filter(
+                                            (v) => v === singleProduct
+                                          ).length
                                         )
-                                      }
-                                    >
-                                      +
-                                    </div>
-                                    <div className="miniCartQuantity">
-                                      {
+                                      ) : (
                                         cart.filter((v) => v === singleProduct)
                                           .length
-                                      }
+                                      )}
                                     </div>
-                                    <div
-                                      className="miniCartRemove"
-                                      onClick={() =>
-                                        this.handleQuantity(
-                                          singleProduct,
-                                          "dec",
-                                          ProductQuantity
-                                        )
-                                      }
-                                    >
-                                      -
-                                    </div>
+                                    {this.state.clickedProduct ===
+                                    singleProduct ? (
+                                      <button
+                                        disabled={this.state.disabledRemove}
+                                        className="variationRemove"
+                                        onClick={() =>
+                                          this.handleQuantity(
+                                            singleProduct,
+                                            "dec",
+                                            ProductQuantity,
+
+                                            cart.filter(
+                                              (v) => v === singleProduct
+                                            ).length
+                                          )
+                                        }
+                                      >
+                                        -
+                                      </button>
+                                    ) : (
+                                      <button
+                                        className="variationRemove"
+                                        onClick={() =>
+                                          this.handleQuantity(
+                                            singleProduct,
+                                            "dec",
+                                            ProductQuantity,
+
+                                            cart.filter(
+                                              (v) => v === singleProduct
+                                            ).length
+                                          )
+                                        }
+                                      >
+                                        -
+                                      </button>
+                                    )}
                                   </div>
                                   <div className="miniCartImg">
                                     <img

@@ -77,15 +77,19 @@ export default class Product extends Component {
   componentDidMount() {
     this.get_product();
   }
+
+  // Remove style from selected attribute
   removeColor = () => {
     const colorList = document.querySelectorAll(".selectedColor");
     colorList.forEach((item) => item.classList.remove("selectedColor"));
   };
 
+  // Add Remove style to selected attribute
   addColor = (e) => {
     e.target.classList.add("selectedColor");
   };
 
+  // Remove attribute
   removeAttribute = (attribute) => {
     let className = `selected${attribute}`;
     let modClassName = className.split(" ").join("");
@@ -93,6 +97,7 @@ export default class Product extends Component {
     sizeList.forEach((item) => item.classList.remove(`${modClassName}`));
   };
 
+  // Add attribute
   addAttribute = (e, attribute) => {
     this.setState({ att: [...this.state.att, attribute] });
     let className = `selected${attribute}`;
@@ -100,7 +105,9 @@ export default class Product extends Component {
     e.target.classList.add(`${modClassName}`);
   };
 
+  // Select attribute(s)
   selectAttribute = (product, e, attribute, type) => {
+    // While selecting attributes from PDP
     if (type === "default") {
       this.removeAttribute(attribute);
       this.addAttribute(e, attribute);
@@ -112,6 +119,7 @@ export default class Product extends Component {
         this.setState({ disabled: false });
       }
     } else {
+      // While selecting attributes from variation page
       this.removeAttribute(attribute);
       this.addAttribute(e, attribute);
       this.setState({
@@ -126,7 +134,10 @@ export default class Product extends Component {
       }
     }
   };
+
+  // Seletc Color Type
   selectColor = (product, e, value, type) => {
+    // While selecting attributes from PDP
     if (type === "default") {
       this.removeColor();
       this.addColor(e);
@@ -137,9 +148,9 @@ export default class Product extends Component {
 
       if (product.attributes.length === this.state.arr.length + 1) {
         this.setState({ disabled: false });
-        // this.setState({ variationBtnDisabled: false });
       }
     } else {
+      // While selecting attributes from variation page
       this.removeColor();
       this.addColor(e);
       this.setState({
@@ -152,7 +163,9 @@ export default class Product extends Component {
     }
   };
 
+  // Add product to cart
   addToCart = (product, e) => {
+    // If product has no attribute
     if (product.attributes.length === 0) {
       this.context.cartDispatch(
         addProduct({
@@ -162,8 +175,8 @@ export default class Product extends Component {
         })
       );
     } else {
+      // If product has attribute(s)
       let newArr = this.state.arr.slice(-product.attributes.length);
-      // let  = this.state.arr.slice(-product.attributes.length);
       this.setState({ attArr: newArr });
       let cartProduct = {
         ...product,
@@ -191,9 +204,16 @@ export default class Product extends Component {
     }
   };
 
-  ProdhandleQuantity = (singleProduct, type, ProductQuantity, ab) => {
+  // Modify product quantity
+  ProdhandleQuantity = (
+    singleProduct,
+    type,
+    ProductQuantity,
+    quantityInCart
+  ) => {
+    //  Decrease quantity
     if (type === "dec") {
-      if (ab > 0) {
+      if (quantityInCart > 0) {
         this.context.cartDispatch(
           removeProduct({
             product: singleProduct,
@@ -207,7 +227,9 @@ export default class Product extends Component {
         }, 500);
       }
     }
+    //  Increase quantity
     if (type === "inc") {
+      // If product has no attribute
       if (singleProduct.attributes.length === 0) {
         this.setState({ quantity: ProductQuantity + 1 });
         this.context.quantityDispatch(increaseProductAmount());
@@ -218,13 +240,12 @@ export default class Product extends Component {
             quantity: ProductQuantity,
           })
         );
-        this.setState({ disabledRemove: true });
+        this.setState({ disabledRemove: true }); //Disable button for X millisecond
         setTimeout(() => {
           this.setState({ disabledRemove: false });
         }, 500);
       } else {
         this.setState({ clickedProduct: singleProduct });
-        // console.log(singleProduct);
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
         this.context.quantityDispatch(increaseProductAmount());
@@ -243,17 +264,22 @@ export default class Product extends Component {
       }
     }
   };
+
+  // show the variation overlay
   showOverlay = () => {
     document.body.style.overflow = "hidden";
     const overlay = document.querySelector(".variationContainer");
     overlay.classList.add("show");
   };
+  // show the variation overlay
   removeOverlay = () => {
     document.body.style.overflowY = "scroll";
     const overlay = document.querySelector(".variationContainer");
     overlay.classList.remove("show");
   };
-  setVariation = (singleProduct, e, ProductQuantity) => {
+
+  // Set attributes of the selected product
+  setVariation = (singleProduct) => {
     let newArr = this.state.varArr.slice(-singleProduct.attributes.length);
     let variedProduct = {
       ...singleProduct,
@@ -262,8 +288,6 @@ export default class Product extends Component {
         new Date().valueOf().toString(36) +
         Math.random().toString(36).substr(2),
     };
-
-    // this.context.quantityDispatch(increaseProductAmount());
 
     this.context.cartDispatch(
       addProduct({
@@ -278,33 +302,15 @@ export default class Product extends Component {
 
   render() {
     const { currency, baseConverter } = this.context.currencyState;
-    const { quantity, cart } = this.context.cartState;
+    const { cart } = this.context.cartState;
     const { ProductQuantity } = this.context.quantityState;
-
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    // {
-    //   console.log(this.state.product);
-    // }
-
-    // let dispContent = cart.filter(
-    //   (v, i, a) => a.findIndex((v2) => v2.attributes === v.attributes) === i
-    // );
-
-    console.log(cart);
-    // console.log(dispContent);
-
-    localStorage.removeItem("cart");
-
-    // const { id, gallery, prices, name } = this.state.product;
-    // this.state.product && console.log(this.state.product);
-    // console.log(gallery);
 
     return (
       <>
         {this.state.product && (
-          <div className="variationContainer" ab={"yes"}>
+          <div className="variationContainer">
             <div className="variationContentContainer">
               <div className="containerTop">
                 <h3 className="variationTitle">Please select a variation</h3>
@@ -571,7 +577,7 @@ export default class Product extends Component {
                       }
                     })
                   ) : (
-                    <div className="miniCartTotal">ABC</div>
+                    <div className="miniCartTotal">Please select a product</div>
                   )}
                 </div>
               </div>
@@ -606,11 +612,6 @@ export default class Product extends Component {
                     }}
                   />
                 </div>
-                {/* <img
-                  src={this.state.product.gallery[0]}
-                  alt=""
-                  className="mainProductImg"
-                /> */}
               </div>
               <div className="productContainerRight">
                 <div className="productTitle">
@@ -693,10 +694,7 @@ export default class Product extends Component {
                   ).toFixed(2)}
                 </div>
 
-                <div
-                  className="productBtn"
-                  // onClick={(e) => this.addToCart(this.state.product, e)}
-                >
+                <div className="productBtn">
                   {this.state.product.attributes.length === 0 ? (
                     cart.some((cartItem) => cartItem === this.state.product) ===
                     true ? (
@@ -744,18 +742,9 @@ export default class Product extends Component {
                       (cartItem) => cartItem.id === this.state.product.id
                     ) === true ? (
                     <div className="productQuantitySet">
-                      {/* {console.log(this.state.product)} */}
                       <div
                         className="productPageAdd"
                         onClick={this.showOverlay}
-                        // onClick={(e) =>
-                        //   this.ProdhandleQuantity(
-                        //     this.state.productInCart,
-                        //     "inc",
-                        //     e,
-                        //     ProductQuantity
-                        //   )
-                        // }
                       >
                         +
                       </div>
@@ -767,14 +756,6 @@ export default class Product extends Component {
                       <div
                         className="productPageRemove"
                         onClick={this.showOverlay}
-                        // onClick={(e) =>
-                        //   this.ProdhandleQuantity(
-                        //     this.state.productInCart,
-                        //     "dec",
-                        //     e,
-                        //     ProductQuantity
-                        //   )
-                        // }
                       >
                         -
                       </div>
@@ -791,7 +772,6 @@ export default class Product extends Component {
                 </div>
                 <div className="productDesc">
                   {parse(this.state.product.description)}
-                  {/* {HTML.parse(this.state.product.description)} */}
                 </div>
               </div>
             </div>
