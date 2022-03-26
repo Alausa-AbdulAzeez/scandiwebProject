@@ -331,6 +331,7 @@
   border: none;
   font-size: medium;
 }
+
 .variationContainer {
   width: 100%;
   height: 100%;
@@ -348,20 +349,43 @@
   transition: all 0.5s ease-in-out; /*make it smooth*/
   /* overflow-x: hidden; */
 }
+/* .variationContentContainer::-webkit-scrollbar {
+  width: 50px;
+} */
+
+/* width */
+.variationContentContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.variationContentContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* Handle */
+.variationContentContainer::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.466);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.variationContentContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(85, 85, 85, 0.555);
+}
 
 .variationContentContainer {
   overflow-y: scroll;
-
   width: 35%;
   height: 70%;
   background-color: #fff;
   padding: 10px;
   display: flex;
   flex-direction: column;
+  border-radius: 10px;
 }
-.variationContentContainer ::-webkit-scrollbar {
-  width: 5px;
-}
+
 .variationSet {
   display: flex;
   flex-direction: column;
@@ -399,9 +423,23 @@
   color: white;
   border-radius: 10px;
   outline: none;
+  margin-bottom: 10px;
 }
 
 .variationRemove,
 .variationAdd {
-  padding: 2px 7px;
+  font-size: 20px;
+
+  padding: 5px 12px;
+  background-color: #25d366;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.closeIcon {
+  cursor: pointer;
+  color: #d32533;
 }

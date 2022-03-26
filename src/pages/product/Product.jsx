@@ -1,8 +1,7 @@
 import { gql } from "apollo-boost";
-import React, { Component, useEffect } from "react";
+import React, { Component } from "react";
 import { client } from "../../App";
 import Navbar from "../../components/navbar/Navbar";
-// import { CategoryContext } from "../../context/categoryContext/CategoryContext";
 import { GlobalContext } from "../../context/Provider/Provider";
 import "./product.css";
 import parse from "html-react-parser";
@@ -13,12 +12,10 @@ import {
 
 import "react-slideshow-image/dist/styles.css";
 import SimpleImageSlider from "react-simple-image-slider";
-import { faCancel, faClose } from "@fortawesome/free-solid-svg-icons";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
 <link rel="stylesheet" href="carousel.css" />;
-
-// const HTML = require("html-parse-stringify");
 
 export default class Product extends Component {
   constructor(props) {
@@ -27,17 +24,15 @@ export default class Product extends Component {
     this.state = {
       product: null,
       productInCart: null,
-      selectedProduct: this.product,
-      prodWatt: null,
       id: window.location.href.split("/")[3],
       disabled: true,
       arr: [],
       varArr: [],
       att: [],
-      quantity: 1,
       attArr: [],
       disabledRemove: false,
       variationBtnDisabled: true,
+      clickedProduct: null,
     };
   }
   static contextType = GlobalContext;
@@ -94,14 +89,11 @@ export default class Product extends Component {
   removeAttribute = (attribute) => {
     let className = `selected${attribute}`;
     let modClassName = className.split(" ").join("");
-    // console.log(modClassName);
     const sizeList = document.querySelectorAll(`.${modClassName}`);
     sizeList.forEach((item) => item.classList.remove(`${modClassName}`));
   };
 
   addAttribute = (e, attribute) => {
-    // console.log(attribute);
-    // this.setState(...this.state.att, { att: attribute });
     this.setState({ att: [...this.state.att, attribute] });
     let className = `selected${attribute}`;
     let modClassName = className.split(" ").join("");
@@ -231,7 +223,8 @@ export default class Product extends Component {
           this.setState({ disabledRemove: false });
         }, 500);
       } else {
-        console.log(singleProduct);
+        this.setState({ clickedProduct: singleProduct });
+        // console.log(singleProduct);
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
         this.context.quantityDispatch(increaseProductAmount());
@@ -330,7 +323,7 @@ export default class Product extends Component {
                   Add
                 </button>
                 <span onClick={this.removeOverlay}>
-                  <FontAwesomeIcon icon={faClose} className="" />
+                  <FontAwesomeIcon icon={faClose} className="closeIcon" />
                 </span>
               </div>
               <div className="containerBottom">
@@ -483,45 +476,91 @@ export default class Product extends Component {
                             </div>
                             <div className="contentRight">
                               <div className="variationSet">
-                                <button
-                                  disabled={this.state.disabledRemove}
-                                  className="variationAdd"
-                                  onClick={() =>
-                                    this.ProdhandleQuantity(
-                                      singleProduct,
-                                      "inc",
-                                      ProductQuantity,
+                                {this.state.clickedProduct === singleProduct ? (
+                                  <button
+                                    disabled={this.state.disabledRemove}
+                                    className="variationAdd"
+                                    onClick={() =>
+                                      this.ProdhandleQuantity(
+                                        singleProduct,
+                                        "inc",
+                                        ProductQuantity,
 
+                                        cart.filter((v) => v === singleProduct)
+                                          .length
+                                      )
+                                    }
+                                  >
+                                    +
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="variationAdd"
+                                    onClick={() =>
+                                      this.ProdhandleQuantity(
+                                        singleProduct,
+                                        "inc",
+                                        ProductQuantity,
+
+                                        cart.filter((v) => v === singleProduct)
+                                          .length
+                                      )
+                                    }
+                                  >
+                                    +
+                                  </button>
+                                )}
+
+                                <div className="variationQuantity">
+                                  {this.state.disabledRemove ? (
+                                    this.state.clickedProduct ===
+                                    singleProduct ? (
+                                      <div className="loader">
+                                        {console.log(singleProduct)}
+                                      </div>
+                                    ) : (
                                       cart.filter((v) => v === singleProduct)
                                         .length
                                     )
-                                  }
-                                >
-                                  +
-                                </button>
-                                <div className="variationQuantity">
-                                  {this.state.disabledRemove ? (
-                                    <div className="loader"></div>
                                   ) : (
                                     cart.filter((v) => v === singleProduct)
                                       .length
                                   )}
                                 </div>
-                                <button
-                                  disabled={this.state.disabledRemove}
-                                  className="variationRemove"
-                                  onClick={() =>
-                                    this.ProdhandleQuantity(
-                                      singleProduct,
-                                      "dec",
-                                      ProductQuantity,
-                                      cart.filter((v) => v === singleProduct)
-                                        .length
-                                    )
-                                  }
-                                >
-                                  -
-                                </button>
+                                {this.state.clickedProduct === singleProduct ? (
+                                  <button
+                                    disabled={this.state.disabledRemove}
+                                    className="variationRemove"
+                                    onClick={() =>
+                                      this.ProdhandleQuantity(
+                                        singleProduct,
+                                        "dec",
+                                        ProductQuantity,
+
+                                        cart.filter((v) => v === singleProduct)
+                                          .length
+                                      )
+                                    }
+                                  >
+                                    -
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="variationRemove"
+                                    onClick={() =>
+                                      this.ProdhandleQuantity(
+                                        singleProduct,
+                                        "dec",
+                                        ProductQuantity,
+
+                                        cart.filter((v) => v === singleProduct)
+                                          .length
+                                      )
+                                    }
+                                  >
+                                    -
+                                  </button>
+                                )}
                               </div>
                               <div className="miniCartImg">
                                 <img src={singleProduct.gallery[0]} alt="" />

@@ -1,17 +1,11 @@
-import { useQuery } from "@apollo/client";
-import {
-  faShoppingBasket,
-  faShoppingCart,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import { client } from "../../App";
-import { CategoryContext } from "../../context/categoryContext/CategoryContext";
 import { GlobalContext } from "../../context/Provider/Provider";
-import { GET_PRODUCTS, GET_PRODUCTS2 } from "../../GraphQL/Queries";
 import { gql } from "apollo-boost";
 import "./category.css";
-import { Outlet, Link, Navigate, Route, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   addProduct,
   removeProduct,
@@ -23,13 +17,8 @@ export class Category extends Component {
     super(props);
 
     this.state = {
-      inCart: false,
-      showCount: "true",
       products: null,
       clicked: false,
-      quantity: 0,
-      p: [],
-      redirect: false,
     };
   }
 
@@ -91,11 +80,8 @@ export class Category extends Component {
           })
         );
       } else {
-        // e.preventDefault();
-        // window.location.assign(`/${product.id}`);
       }
-      // product["clicked"] = true;
-      // product["amount"] = 0;
+
       this.setState({ clicked: !this.state.clicked });
     }
   };
@@ -104,18 +90,10 @@ export class Category extends Component {
       e.preventDefault();
     }
   };
-  // increaseQuantity = (product, e) => {
-  //   this.setState({ p: [...this.state.p, product] });
-  //   console.log(e);
-  //   product["amount"] = parseInt(e.target.nextSibling.innerText) + 1;
-  //   return { ...product };
-  // };
 
-  increaseQuantity = (singleProduct, type, ProductQuantity, ab) => {
+  increaseQuantity = (singleProduct, type, ProductQuantity, quantityInCart) => {
     if (type === "dec") {
-      if (ab > 0) {
-        // console.log(ProductQuantity);
-        // this.setState({ quantity: ProductQuantity - 1 });
+      if (quantityInCart > 0) {
         this.context.cartDispatch(
           removeProduct({
             product: singleProduct,
@@ -127,8 +105,6 @@ export class Category extends Component {
     }
     if (type === "inc") {
       if (singleProduct.attributes.length === 0) {
-        // this.setState({ quantity: ProductQuantity + 1 });
-        this.context.quantityDispatch(increaseProductAmount());
         this.context.cartDispatch(
           addProduct({
             product: singleProduct,
@@ -137,13 +113,9 @@ export class Category extends Component {
           })
         );
       } else {
-        // console.log(singleProduct);
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
-        this.context.quantityDispatch(increaseProductAmount());
         console.log(ProductQuantity);
-        // console.log(newArr);
-        // console.log(singleProduct);
         this.context.cartDispatch(
           addProduct({
             product: singleProduct,
@@ -252,10 +224,7 @@ export class Category extends Component {
                             </span>
                           ) : (
                             <Link to={`/${id}`}>
-                              <span
-                                className="itemIconContainer"
-                                // onClick={(e) => this.addToCart(product, e)}
-                              >
+                              <span className="itemIconContainer">
                                 <FontAwesomeIcon
                                   icon={faShoppingCart}
                                   className="ItembagIcon"
@@ -370,10 +339,7 @@ export class Category extends Component {
                               </span>
                             ) : (
                               <Link to={`/${id}`}>
-                                <span
-                                  className="itemIconContainer"
-                                  // onClick={(e) => this.addToCart(product, e)}
-                                >
+                                <span className="itemIconContainer">
                                   <FontAwesomeIcon
                                     icon={faShoppingCart}
                                     className="ItembagIcon"
@@ -382,15 +348,6 @@ export class Category extends Component {
                               </Link>
                             )}
                           </span>
-                          {/* <span
-                            className="itemIconContainer"
-                            onClick={(e) => this.addToCart(filteredProduct, e)}
-                          >
-                            <FontAwesomeIcon
-                              icon={faShoppingCart}
-                              className="ItembagIcon"
-                            />
-                          </span> */}
                         </div>
                       </div>
                     );
