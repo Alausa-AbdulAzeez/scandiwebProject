@@ -91,7 +91,13 @@ export class Category extends Component {
     }
   };
 
-  increaseQuantity = (singleProduct, type, ProductQuantity, quantityInCart) => {
+  increaseQuantity = (
+    singleProduct,
+    type,
+    ProductQuantity,
+    quantityInCart,
+    cart
+  ) => {
     if (type === "dec") {
       if (quantityInCart > 0) {
         this.context.cartDispatch(
@@ -105,13 +111,26 @@ export class Category extends Component {
     }
     if (type === "inc") {
       if (singleProduct.attributes.length === 0) {
-        this.context.cartDispatch(
-          addProduct({
-            product: singleProduct,
-            price: singleProduct.prices[0].amount,
-            quantity: 1,
-          })
+        let itemInCart = cart.find(
+          (cartProduct) => cartProduct.id === singleProduct.id
         );
+        if (itemInCart) {
+          this.context.cartDispatch(
+            addProduct({
+              product: itemInCart,
+              price: singleProduct.prices[0].amount,
+              quantity: 1,
+            })
+          );
+        } else {
+          this.context.cartDispatch(
+            addProduct({
+              product: singleProduct,
+              price: singleProduct.prices[0].amount,
+              quantity: 1,
+            })
+          );
+        }
       } else {
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
@@ -173,53 +192,60 @@ export class Category extends Component {
                             {(prices[0].amount * baseConverter).toFixed(2)}
                           </div>
                         </div>
-                        <span className="">
-                          {product.attributes.length === 0 &&
-                          cart.some((cartItem) => cartItem === product) ? (
-                            <div className="quantitySet">
-                              <div
-                                className="miniCartAdd"
-                                onClick={(e) =>
-                                  this.increaseQuantity(
-                                    product,
-                                    "inc",
-                                    1,
-                                    cart.length > 0 &&
-                                      cart.filter((v) => v === product).length
-                                  )
-                                }
+                        <span>
+                          {product.attributes.length === 0 ? (
+                            cart.some(
+                              (cartItem) => cartItem.id === product.id
+                            ) === true ? (
+                              <div className="quantitySet">
+                                <div
+                                  className="miniCartAdd"
+                                  onClick={(e) =>
+                                    this.increaseQuantity(
+                                      product,
+                                      "inc",
+                                      1,
+                                      cart.length > 0 &&
+                                        cart.filter((v) => v.id === product.id)
+                                          .length,
+                                      cart
+                                    )
+                                  }
+                                >
+                                  +
+                                </div>
+                                <div className="miniCartQuantity">
+                                  {cart.length > 0 &&
+                                    cart.filter((v) => v.id === product.id)
+                                      .length}
+                                </div>
+                                <div
+                                  className="miniCartRemove"
+                                  onClick={(e) =>
+                                    this.increaseQuantity(
+                                      product,
+                                      "dec",
+                                      1,
+                                      cart.length > 0 &&
+                                        cart.filter((v) => v.id === product.id)
+                                          .length
+                                    )
+                                  }
+                                >
+                                  -
+                                </div>
+                              </div>
+                            ) : (
+                              <span
+                                className="itemIconContainer"
+                                onClick={(e) => this.addToCart(product, e)}
                               >
-                                +
-                              </div>
-                              <div className="miniCartQuantity">
-                                {cart.length > 0 &&
-                                  cart.filter((v) => v === product).length}
-                              </div>
-                              <div
-                                className="miniCartRemove"
-                                onClick={(e) =>
-                                  this.increaseQuantity(
-                                    product,
-                                    "dec",
-                                    1,
-                                    cart.length > 0 &&
-                                      cart.filter((v) => v === product).length
-                                  )
-                                }
-                              >
-                                -
-                              </div>
-                            </div>
-                          ) : product.attributes.length === 0 ? (
-                            <span
-                              className="itemIconContainer"
-                              onClick={(e) => this.addToCart(product, e)}
-                            >
-                              <FontAwesomeIcon
-                                icon={faShoppingCart}
-                                className="ItembagIcon"
-                              />
-                            </span>
+                                <FontAwesomeIcon
+                                  icon={faShoppingCart}
+                                  className="ItembagIcon"
+                                />
+                              </span>
+                            )
                           ) : (
                             <Link to={`/${id}`}>
                               <span className="itemIconContainer">
@@ -278,11 +304,80 @@ export class Category extends Component {
                               {(prices[0].amount * baseConverter).toFixed(2)}
                             </div>
                           </div>
-                          <span className="">
+                          <span>
+                            {filteredProduct.attributes.length === 0 ? (
+                              cart.some(
+                                (cartItem) => cartItem.id === filteredProduct.id
+                              ) === true ? (
+                                <div className="quantitySet">
+                                  <div
+                                    className="miniCartAdd"
+                                    onClick={(e) =>
+                                      this.increaseQuantity(
+                                        filteredProduct,
+                                        "inc",
+                                        1,
+                                        cart.length > 0 &&
+                                          cart.filter(
+                                            (v) => v.id === filteredProduct.id
+                                          ).length
+                                      )
+                                    }
+                                  >
+                                    +
+                                  </div>
+                                  <div className="miniCartQuantity">
+                                    {cart.length > 0 &&
+                                      cart.filter(
+                                        (v) => v.id === filteredProduct.id
+                                      ).length}
+                                  </div>
+                                  <div
+                                    className="miniCartRemove"
+                                    onClick={(e) =>
+                                      this.increaseQuantity(
+                                        filteredProduct,
+                                        "dec",
+                                        1,
+                                        cart.length > 0 &&
+                                          cart.filter(
+                                            (v) => v.id === filteredProduct.id
+                                          ).length
+                                      )
+                                    }
+                                  >
+                                    -
+                                  </div>
+                                </div>
+                              ) : (
+                                <span
+                                  className="itemIconContainer"
+                                  onClick={(e) =>
+                                    this.addToCart(filteredProduct, e)
+                                  }
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faShoppingCart}
+                                    className="ItembagIcon"
+                                  />
+                                </span>
+                              )
+                            ) : (
+                              <Link to={`/${id}`}>
+                                <span className="itemIconContainer">
+                                  <FontAwesomeIcon
+                                    icon={faShoppingCart}
+                                    className="ItembagIcon"
+                                  />
+                                </span>
+                              </Link>
+                            )}
+                          </span>
+                          {/* <span className="">
                             {filteredProduct.attributes.length === 0 &&
                             cart.some(
                               (cartItem) => cartItem === filteredProduct
-                            ) ? (
+                            ) === true ? (
                               <div className="quantitySet">
                                 <div
                                   className="miniCartAdd"
@@ -344,7 +439,7 @@ export class Category extends Component {
                                 </span>
                               </Link>
                             )}
-                          </span>
+                          </span> */}
                         </div>
                       </div>
                     );

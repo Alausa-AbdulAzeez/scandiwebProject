@@ -41,12 +41,21 @@ export default class Navbar extends Component {
       },
       clickedProduct: null,
       disabledRemove: false,
-
+      showScroll: true,
       showMiniCart: false,
       category: null,
     };
   }
   static contextType = GlobalContext;
+
+  setScroll = (showOverflow) => {
+    if (showOverflow === false) {
+      document.body.style.overflow = "scroll";
+    } else {
+      document.body.style.overflow = "hidden";
+    }
+    this.setState({ showScroll: !this.state.showScroll });
+  };
 
   // Remove styling from links
   removeActive = () => {
@@ -133,7 +142,8 @@ export default class Navbar extends Component {
   };
 
   // Show miniCart
-  showMiniCart = (e) => {
+  showMiniCart = (showOverflow) => {
+    this.setScroll(showOverflow);
     this.setState({ showMiniCart: !this.state.showMiniCart });
   };
 
@@ -168,6 +178,11 @@ export default class Navbar extends Component {
     }
   }
 
+  setViewCart = (showOverflow) => {
+    this.setState({ showMiniCart: !this.state.showMiniCart });
+    this.setScroll(showOverflow);
+  };
+
   render() {
     const { currencyDispatch } = this.context;
     const { baseConverter, currency } = this.context.currencyState;
@@ -187,7 +202,7 @@ export default class Navbar extends Component {
                     className={`navLeftList ${
                       this.state.activeList.allActive === "active" && "active"
                     }`}
-                    onClick={this.handleClick}
+                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
                     ALL
                   </li>
@@ -197,7 +212,7 @@ export default class Navbar extends Component {
                     className={`navLeftList ${
                       this.state.activeList.techActive === "active" && "active"
                     }`}
-                    onClick={this.handleClick}
+                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
                     TECH
                   </li>
@@ -207,7 +222,7 @@ export default class Navbar extends Component {
                     className={`navLeftList ${
                       this.state.activeList.clothActive === "active" && "active"
                     }`}
-                    onClick={this.handleClick}
+                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
                     CLOTHES
                   </li>
@@ -272,7 +287,7 @@ export default class Navbar extends Component {
                 <FontAwesomeIcon
                   icon={faCartShopping}
                   className="cartIcon"
-                  onClick={this.showMiniCart}
+                  onClick={() => this.showMiniCart(this.state.showScroll)}
                 />
                 <span className="cartIconBadge">{cart.length}</span>
                 <div className="miniCartWrapper">
@@ -490,7 +505,13 @@ export default class Navbar extends Component {
                         </div>
                         <div className="miniCartButtons">
                           <Link to={"/cart"} className="viewBag">
-                            <div>VIEW BAG</div>
+                            <div
+                              onClick={() =>
+                                this.setViewCart(this.state.showScroll)
+                              }
+                            >
+                              VIEW BAG
+                            </div>
                           </Link>
                           <div className="checkOut">CHECKOUT</div>
                         </div>

@@ -129,9 +129,10 @@
   background-color: rgba(128, 128, 128, 0.301);
   width: 100vw;
   height: calc(100vh - 80px);
+  /* height: 100%; */
   visibility: hidden;
   position: absolute;
-  top: 48px;
+  top: 50px;
   z-index: 4;
   right: -100px;
 }
@@ -140,13 +141,37 @@
   background-color: white;
   position: absolute;
   top: 0px;
-  right: 0;
+  right: 100px;
   display: flex;
   flex-direction: column;
   padding: 10px;
-  height: 70vh;
+  min-height: 40vh;
+  max-height: 70vh;
   overflow-y: scroll;
+  justify-content: space-between;
 }
+/* width */
+.miniCart::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.miniCart::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* Handle */
+.miniCart::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.466);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.miniCart::-webkit-scrollbar-thumb:hover {
+  background: rgba(85, 85, 85, 0.555);
+}
+
 .miniCartTitle {
   font-weight: bold;
   margin-bottom: 30px;

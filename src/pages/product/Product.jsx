@@ -168,7 +168,7 @@ export default class Product extends Component {
     if (product.attributes.length === 0) {
       this.context.cartDispatch(
         addProduct({
-          product,
+          product: product,
           price: product.prices[0].amount,
           quantity: 1,
         })
@@ -208,7 +208,8 @@ export default class Product extends Component {
     singleProduct,
     type,
     ProductQuantity,
-    quantityInCart
+    quantityInCart,
+    cart
   ) => {
     //  Decrease quantity
     if (type === "dec") {
@@ -230,15 +231,34 @@ export default class Product extends Component {
     if (type === "inc") {
       // If product has no attribute
       if (singleProduct.attributes.length === 0) {
-        this.setState({ quantity: ProductQuantity + 1 });
-        this.context.quantityDispatch(increaseProductAmount());
-        this.context.cartDispatch(
-          addProduct({
-            product: this.state.product,
-            price: singleProduct.prices[0].amount,
-            quantity: ProductQuantity,
-          })
+        let itemInCart = cart.find(
+          (cartProduct) => cartProduct.id === singleProduct.id
         );
+        if (itemInCart) {
+          this.context.cartDispatch(
+            addProduct({
+              product: itemInCart,
+              price: singleProduct.prices[0].amount,
+              quantity: 1,
+            })
+          );
+        } else {
+          this.context.cartDispatch(
+            addProduct({
+              product: singleProduct,
+              price: singleProduct.prices[0].amount,
+              quantity: 1,
+            })
+          );
+        }
+
+        // this.context.cartDispatch(
+        //   addProduct({
+        //     product: singleProduct,
+        //     price: singleProduct.prices[0].amount,
+        //     quantity: 1,
+        //   })
+        // );
         this.setState({ disabledRemove: true }); //Disable button for X millisecond
         setTimeout(() => {
           this.setState({ disabledRemove: false });
@@ -693,8 +713,9 @@ export default class Product extends Component {
 
                 <div className="productBtn">
                   {this.state.product.attributes.length === 0 ? (
-                    cart.some((cartItem) => cartItem === this.state.product) ===
-                    true ? (
+                    cart.some(
+                      (cartItem) => cartItem.id === this.state.product.id
+                    ) === true ? (
                       <div className="productQuantitySet">
                         <div
                           className="productPageAdd"
@@ -703,7 +724,8 @@ export default class Product extends Component {
                               this.state.product,
                               "inc",
                               e,
-                              ProductQuantity
+                              ProductQuantity,
+                              cart
                             )
                           }
                         >
@@ -711,7 +733,8 @@ export default class Product extends Component {
                         </div>
                         <div className="productPageQuantity">
                           {cart.length > 0 &&
-                            cart.filter((v) => v === this.state.product).length}
+                            cart.filter((v) => v.id === this.state.product.id)
+                              .length}
                         </div>
                         <div
                           className="productPageRemove"
