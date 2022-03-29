@@ -320,7 +320,8 @@ export class Category extends Component {
                                         cart.length > 0 &&
                                           cart.filter(
                                             (v) => v.id === filteredProduct.id
-                                          ).length
+                                          ).length,
+                                        cart
                                       )
                                     }
                                   >
@@ -342,7 +343,8 @@ export class Category extends Component {
                                         cart.length > 0 &&
                                           cart.filter(
                                             (v) => v.id === filteredProduct.id
-                                          ).length
+                                          ).length,
+                                        cart
                                       )
                                     }
                                   >

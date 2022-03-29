@@ -26,7 +26,6 @@ import {
   addProduct,
   removeProduct,
 } from "../../context/cartContext/CartActions";
-import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -105,7 +104,10 @@ export default class Navbar extends Component {
   };
 
   // Set current link
-  handleClick = (e) => {
+  handleClick = (e, showOverflow) => {
+    if (this.state.showMiniCart) {
+      this.setViewCart(showOverflow);
+    }
     if (e.target.innerText === "ALL") {
       this.setState({
         activeList: {
@@ -187,7 +189,7 @@ export default class Navbar extends Component {
     const { currencyDispatch } = this.context;
     const { baseConverter, currency } = this.context.currencyState;
     const { cart, total } = this.context.cartState;
-    const { ProductQuantity } = this.context.quantityState;
+    // const { ProductQuantity } = this.context.quantityState;
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
 
@@ -399,7 +401,7 @@ export default class Navbar extends Component {
                                           this.handleQuantity(
                                             singleProduct,
                                             "inc",
-                                            ProductQuantity,
+                                            // ProductQuantity,
 
                                             cart.filter(
                                               (v) => v === singleProduct
@@ -416,7 +418,7 @@ export default class Navbar extends Component {
                                           this.handleQuantity(
                                             singleProduct,
                                             "inc",
-                                            ProductQuantity,
+                                            // ProductQuantity,
 
                                             cart.filter(
                                               (v) => v === singleProduct
@@ -452,7 +454,7 @@ export default class Navbar extends Component {
                                           this.handleQuantity(
                                             singleProduct,
                                             "dec",
-                                            ProductQuantity,
+                                            // ProductQuantity,
 
                                             cart.filter(
                                               (v) => v === singleProduct
@@ -469,7 +471,7 @@ export default class Navbar extends Component {
                                           this.handleQuantity(
                                             singleProduct,
                                             "dec",
-                                            ProductQuantity,
+                                            // ProductQuantity,
 
                                             cart.filter(
                                               (v) => v === singleProduct

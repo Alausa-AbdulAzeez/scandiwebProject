@@ -14,7 +14,7 @@ import "react-slideshow-image/dist/styles.css";
 import SimpleImageSlider from "react-simple-image-slider";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
+// import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
 <link rel="stylesheet" href="carousel.css" />;
 
 export default class Product extends Component {
@@ -267,7 +267,7 @@ export default class Product extends Component {
         this.setState({ clickedProduct: singleProduct });
         let newArr = this.state.attArr.slice(-singleProduct.attributes.length);
         let cartProduct = { ...singleProduct, attributes: newArr };
-        this.context.quantityDispatch(increaseProductAmount());
+        // this.context.quantityDispatch(increaseProductAmount());
 
         this.context.cartDispatch(
           addProduct({
