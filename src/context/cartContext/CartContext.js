@@ -1,4 +1,4 @@
-let a = JSON.parse(localStorage.getItem("cart"));
+let a = JSON.parse(localStorage.getItem('cart'));
 let b = a;
 
 export const CART_INITIAL_STATE = {
@@ -6,3 +6,4 @@ export const CART_INITIAL_STATE = {
   quantity: 0,
   total: 0,
 };
+

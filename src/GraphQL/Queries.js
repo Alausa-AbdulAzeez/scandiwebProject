@@ -1,4 +1,4 @@
-import { ApolloClient, gql } from "apollo-boost";
+import { ApolloClient, gql } from 'apollo-boost';
 // import { client } from "../App";
 
 export const GET_PRODUCTS = gql`
@@ -65,3 +65,4 @@ export const GET_PRODUCTS = gql`
 //     }
 //   `,
 // });
+

@@ -1,15 +1,16 @@
 export const toUsd = () => ({
-  type: "TO_USD",
+  type: 'TO_USD',
 });
 export const toGbp = () => ({
-  type: "TO_POUNDS",
+  type: 'TO_POUNDS',
 });
 export const toCad = () => ({
-  type: "TO_CAD",
+  type: 'TO_CAD',
 });
 export const toJpy = () => ({
-  type: "TO_JPY",
+  type: 'TO_JPY',
 });
 export const toRub = () => ({
-  type: "TO_RUB",
+  type: 'TO_RUB',
 });
+

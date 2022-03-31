@@ -129,7 +129,6 @@
   background-color: rgba(128, 128, 128, 0.301);
   width: 100vw;
   height: calc(100vh - 80px);
-  /* height: 100%; */
   visibility: hidden;
   position: absolute;
   top: 50px;
@@ -140,8 +139,8 @@
   width: 425px;
   background-color: white;
   position: absolute;
-  top: 0px;
-  right: 100px;
+  top: 50px;
+  right: 00px;
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -149,6 +148,7 @@
   max-height: 70vh;
   overflow-y: scroll;
   justify-content: space-between;
+  z-index: 5;
 }
 /* width */
 .miniCart::-webkit-scrollbar {

@@ -1,13 +1,13 @@
 const CartReducer = (state, action) => {
   switch (action.type) {
     // CArt REDUCER
-    case "ADD_PRODUCT":
+    case 'ADD_PRODUCT':
       return {
         cart: [...state.cart, action.payload.product],
         quantity: state.quantity + 1,
         total: state.total + action.payload.price * action.payload.quantity,
       };
-    case "REMOVE_PRODUCT":
+    case 'REMOVE_PRODUCT':
       if (action.payload.product.attributes.length === 0) {
         return {
           cart: state.cart.slice(1),
@@ -35,3 +35,4 @@ const CartReducer = (state, action) => {
 };
 
 export default CartReducer;
+

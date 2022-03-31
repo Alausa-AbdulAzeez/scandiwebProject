@@ -1,12 +1,12 @@
 const QuantityReducer = (state, action) => {
   switch (action.type) {
     // Quantity REDUCER
-    case "INCREASE_QUANTITY":
+    case 'INCREASE_QUANTITY':
       console.log(state.ProductQuantity);
       return {
         ProductQuantity: state.ProductQuantity + 1,
       };
-    case "REDUCE_QUANTITY":
+    case 'REDUCE_QUANTITY':
       return {
         ProductQuantity: state.ProductQuantity - 1,
       };
@@ -17,3 +17,4 @@ const QuantityReducer = (state, action) => {
 };
 
 export default QuantityReducer;
+

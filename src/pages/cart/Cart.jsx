@@ -1,12 +1,14 @@
-import React, { Component } from "react";
-import SimpleImageSlider from "react-simple-image-slider";
-import Navbar from "../../components/navbar/Navbar";
+import React, { Component } from 'react';
+import SimpleImageSlider from 'react-simple-image-slider';
+import Navbar from '../../components/navbar/Navbar';
 import {
   addProduct,
   removeProduct,
-} from "../../context/cartContext/CartActions";
-import { GlobalContext } from "../../context/Provider/Provider";
-import "./cart.css";
+} from '../../context/cartContext/CartActions';
+import { GlobalContext } from '../../context/Provider/Provider';
+import './cart.css';
+// import a from "../../icons/";
+
 <link rel="stylesheet" href="carousel.css" />;
 
 export default class Cart extends Component {
@@ -17,13 +19,15 @@ export default class Cart extends Component {
       product: null,
       disabledRemove: false,
       clickedProduct: null,
+      i: 0,
+      carClick: null,
     };
   }
 
   static contextType = GlobalContext;
 
   ProdhandleQuantity = (singleProduct, type, ab) => {
-    if (type === "dec") {
+    if (type === 'dec') {
       if (ab > 0) {
         this.context.cartDispatch(
           removeProduct({
@@ -38,7 +42,7 @@ export default class Cart extends Component {
         }, 500);
       }
     }
-    if (type === "inc") {
+    if (type === 'inc') {
       if (singleProduct.attributes.length === 0) {
         this.context.cartDispatch(
           addProduct({
@@ -60,6 +64,34 @@ export default class Cart extends Component {
         setTimeout(() => {
           this.setState({ disabledRemove: false });
         }, 500);
+      }
+    }
+  };
+  handleImgSlide = (e, direction, cartItem) => {
+    this.setState({ carClick: cartItem });
+    console.log(cartItem);
+    let id = cartItem.idInCart;
+
+    const currentImg = document.getElementById(`${id}`);
+    // currentImg.style.transform = "translateX(-141px)";
+
+    console.log(currentImg);
+
+    if (direction === 'right') {
+      console.log(this.state.i);
+      console.log(cartItem.gallery.length);
+      if (this.state.i + 1 === cartItem.gallery.length) {
+        console.log('jd');
+        this.setState({ i: 0 });
+      } else {
+        this.setState({ i: this.state.i + 1 });
+      }
+    } else {
+      console.log('hey');
+      if (this.state.i > 0) {
+        this.setState({ i: this.state.i - 1 });
+      } else {
+        this.setState({ i: cartItem.gallery.length - 1 });
       }
     }
   };
@@ -87,9 +119,9 @@ export default class Cart extends Component {
                 <div className="mainCartContent">
                   <div className="cartContentLeft">
                     <div className="cartPproductTitle">
-                      {cartItem.name.split(" ").slice(0, 1)}
+                      {cartItem.name.split(' ').slice(0, 1)}
                       <br />
-                      <span>{cartItem.name.split(" ").slice(1).join(" ")}</span>
+                      <span>{cartItem.name.split(' ').slice(1).join(' ')}</span>
                     </div>
                     <div className="mainCartProductPrice">
                       {currency}
@@ -98,7 +130,7 @@ export default class Cart extends Component {
                     <div className="mainCartProductSizes">
                       {cartItem.attributes.length > 0 &&
                         cartItem.attributes.map((attribute) => {
-                          if (Object.keys(attribute)[0] === "color") {
+                          if (Object.keys(attribute)[0] === 'color') {
                             return (
                               <div
                                 className=" selecTedColorWrapper"
@@ -177,7 +209,7 @@ export default class Cart extends Component {
                         -
                       </button>
                     </div> */}
-                    <div className="variationSet">
+                    <div className="quantitySet">
                       {this.state.clickedProduct === cartItem ? (
                         <button
                           disabled={this.state.disabledRemove}
@@ -185,7 +217,7 @@ export default class Cart extends Component {
                           onClick={() =>
                             this.ProdhandleQuantity(
                               cartItem,
-                              "inc",
+                              'inc',
 
                               cart.filter((v) => v === cartItem).length
                             )
@@ -199,7 +231,7 @@ export default class Cart extends Component {
                           onClick={() =>
                             this.ProdhandleQuantity(
                               cartItem,
-                              "inc",
+                              'inc',
 
                               cart.filter((v) => v === cartItem).length
                             )
@@ -227,7 +259,7 @@ export default class Cart extends Component {
                           onClick={() =>
                             this.ProdhandleQuantity(
                               cartItem,
-                              "dec",
+                              'dec',
 
                               cart.filter((v) => v === cartItem).length
                             )
@@ -241,7 +273,7 @@ export default class Cart extends Component {
                           onClick={() =>
                             this.ProdhandleQuantity(
                               cartItem,
-                              "dec",
+                              'dec',
 
                               cart.filter((v) => v === cartItem).length
                             )
@@ -252,18 +284,80 @@ export default class Cart extends Component {
                       )}
                     </div>
                     <div className="mainCartImg">
-                      <SimpleImageSlider
-                        width={200}
-                        height={200}
-                        images={cartItem.gallery}
-                        showBullets={true}
-                        showNavs={true}
-                        autoPlay={true}
-                        navStyle={{
-                          objectFit: "contain",
-                          cursor: "progress",
-                        }}
-                      />
+                      {cartItem.gallery.length === 1 ? (
+                        <img
+                          src={cartItem.gallery[0]}
+                          alt=""
+                          // key={singleImage}
+                          className="currentImg"
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src={require('../../icons/chevron-right.png')}
+                            alt=""
+                            className="chevRight"
+                            onClick={(e) =>
+                              this.handleImgSlide(e, 'right', cartItem)
+                            }
+                          />
+                          <div
+                            className="cartImgContainer"
+                            id={cartItem.idInCart}
+                          >
+                            {this.state.carClick === cartItem ? (
+                              <img
+                                src={cartItem.gallery[this.state.i]}
+                                alt=""
+                                // key={singleImage}
+                                className="currentImg"
+                              />
+                            ) : (
+                              <img
+                                src={cartItem.gallery[0]}
+                                alt=""
+                                // key={singleImage}
+                                className="currentImg"
+                              />
+                            )}
+
+                            {/* {cartItem &&
+                          cartItem.gallery.map((singleImage) => {
+                            return (
+                              <div className="slide">
+                                <img
+                                  src={singleImage}
+                                  alt=""
+                                  key={singleImage}
+                                  className="currentImg"
+                                />
+                              </div>
+                            );
+                          })} */}
+                          </div>
+                          <img
+                            src={require('../../icons/chevron-left.png')}
+                            alt=""
+                            className="chevLeft"
+                            onClick={(e) =>
+                              this.handleImgSlide(e, 'left', cartItem)
+                            }
+                          />
+                        </>
+                      )}
+
+                      {/* <SimpleImageSlider
+                          width={200}
+                          height={200}
+                          images={cartItem.gallery}
+                          showBullets={true}
+                          showNavs={true}
+                          autoPlay={true}
+                          navStyle={{
+                            objectFit: "contain",
+                            cursor: "progress",
+                          }}
+                        /> */}
                       {/* <img src={cartItem.gallery[0]} alt="" /> */}
                     </div>
                   </div>
@@ -278,3 +372,4 @@ export default class Cart extends Component {
     );
   }
 }
+

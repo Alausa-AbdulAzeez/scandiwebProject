@@ -1,16 +1,16 @@
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component } from "react";
-import { client } from "../../App";
-import { GlobalContext } from "../../context/Provider/Provider";
-import { gql } from "apollo-boost";
-import "./category.css";
-import { Link } from "react-router-dom";
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component } from 'react';
+import { client } from '../../App';
+import { GlobalContext } from '../../context/Provider/Provider';
+import { gql } from 'apollo-boost';
+import './category.css';
+import { Link } from 'react-router-dom';
 import {
   addProduct,
   removeProduct,
-} from "../../context/cartContext/CartActions";
-import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
+} from '../../context/cartContext/CartActions';
+import { increaseProductAmount } from '../../context/quantityContext/QuantityActions';
 
 export class Category extends Component {
   constructor(props) {
@@ -68,7 +68,7 @@ export class Category extends Component {
     this.get_products();
   }
   addToCart = (product, e) => {
-    if (product.inStock.toString() === "false") {
+    if (product.inStock.toString() === 'false') {
       e.preventDefault();
     } else {
       if (product.attributes.length === 0) {
@@ -86,7 +86,7 @@ export class Category extends Component {
     }
   };
   handleOutOfStock = (product, e) => {
-    if (product.inStock.toString() === "false") {
+    if (product.inStock.toString() === 'false') {
       e.preventDefault();
     }
   };
@@ -98,7 +98,7 @@ export class Category extends Component {
     quantityInCart,
     cart
   ) => {
-    if (type === "dec") {
+    if (type === 'dec') {
       if (quantityInCart > 0) {
         this.context.cartDispatch(
           removeProduct({
@@ -109,7 +109,7 @@ export class Category extends Component {
         );
       }
     }
-    if (type === "inc") {
+    if (type === 'inc') {
       if (singleProduct.attributes.length === 0) {
         let itemInCart = cart.find(
           (cartProduct) => cartProduct.id === singleProduct.id
@@ -155,7 +155,7 @@ export class Category extends Component {
         <div className="categoryTitle">{category}</div>
         <div className="categoryItems">
           {this.state.products &&
-            (category === "ALL"
+            (category === 'ALL'
               ? this.state.products.map((product) => {
                   const { inStock, id, gallery, prices, name } = product;
                   return (
@@ -203,7 +203,7 @@ export class Category extends Component {
                                   onClick={(e) =>
                                     this.increaseQuantity(
                                       product,
-                                      "inc",
+                                      'inc',
                                       1,
                                       cart.length > 0 &&
                                         cart.filter((v) => v.id === product.id)
@@ -224,7 +224,7 @@ export class Category extends Component {
                                   onClick={(e) =>
                                     this.increaseQuantity(
                                       product,
-                                      "dec",
+                                      'dec',
                                       1,
                                       cart.length > 0 &&
                                         cart.filter((v) => v.id === product.id)
@@ -315,7 +315,7 @@ export class Category extends Component {
                                     onClick={(e) =>
                                       this.increaseQuantity(
                                         filteredProduct,
-                                        "inc",
+                                        'inc',
                                         1,
                                         cart.length > 0 &&
                                           cart.filter(
@@ -338,7 +338,7 @@ export class Category extends Component {
                                     onClick={(e) =>
                                       this.increaseQuantity(
                                         filteredProduct,
-                                        "dec",
+                                        'dec',
                                         1,
                                         cart.length > 0 &&
                                           cart.filter(
@@ -453,3 +453,4 @@ export class Category extends Component {
 }
 
 export default Category;
+

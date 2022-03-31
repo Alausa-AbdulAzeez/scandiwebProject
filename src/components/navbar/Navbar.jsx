@@ -1,31 +1,31 @@
-import React, { Component } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAngleDown,
   faCartShopping,
   faRefresh,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
-import "./navbar.css";
+import './navbar.css';
 
 import {
   allCat,
   clothCat,
   techCat,
-} from "../../context/categoryContext/CategoryActions";
-import { GlobalContext } from "../../context/Provider/Provider";
+} from '../../context/categoryContext/CategoryActions';
+import { GlobalContext } from '../../context/Provider/Provider';
 import {
   toCad,
   toGbp,
   toJpy,
   toRub,
   toUsd,
-} from "../../context/currencyChangeContext/CurrencyActions";
-import { Link } from "react-router-dom";
+} from '../../context/currencyChangeContext/CurrencyActions';
+import { Link } from 'react-router-dom';
 import {
   addProduct,
   removeProduct,
-} from "../../context/cartContext/CartActions";
+} from '../../context/cartContext/CartActions';
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -34,9 +34,9 @@ export default class Navbar extends Component {
     this.state = {
       quantity: 1,
       activeList: {
-        allActive: "",
-        techActive: "",
-        clothActive: "",
+        allActive: '',
+        techActive: '',
+        clothActive: '',
       },
       clickedProduct: null,
       disabledRemove: false,
@@ -49,29 +49,29 @@ export default class Navbar extends Component {
 
   setScroll = (showOverflow) => {
     if (showOverflow === false) {
-      document.body.style.overflow = "scroll";
+      document.body.style.overflow = 'scroll';
     } else {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     }
     this.setState({ showScroll: !this.state.showScroll });
   };
 
   // Remove styling from links
   removeActive = () => {
-    const activeList = document.querySelectorAll(".active");
-    activeList.forEach((item) => item.classList.remove("active"));
+    const activeList = document.querySelectorAll('.active');
+    activeList.forEach((item) => item.classList.remove('active'));
   };
 
   // Add styling to links
   addActive = (e) => {
-    e.target.classList.add("active");
+    e.target.classList.add('active');
   };
 
   // Modify product quantity
 
   handleQuantity = (singleProduct, type, ProductQuantity) => {
     //  Decrease quantity
-    if (type === "dec") {
+    if (type === 'dec') {
       if (ProductQuantity > 0) {
         this.context.cartDispatch(
           removeProduct({
@@ -87,7 +87,7 @@ export default class Navbar extends Component {
       }
     }
     //  Increase quantity
-    if (type === "inc") {
+    if (type === 'inc') {
       this.setState({ clickedProduct: singleProduct });
       this.context.cartDispatch(
         addProduct({
@@ -108,38 +108,38 @@ export default class Navbar extends Component {
     if (this.state.showMiniCart) {
       this.setViewCart(showOverflow);
     }
-    if (e.target.innerText === "ALL") {
+    if (e.target.innerText === 'ALL') {
       this.setState({
         activeList: {
-          allActive: "active",
-          techActive: "",
-          clothActive: "",
+          allActive: 'active',
+          techActive: '',
+          clothActive: '',
         },
       });
 
-      this.context.categoryDispatch(allCat("ALL"));
+      this.context.categoryDispatch(allCat('ALL'));
     }
-    if (e.target.innerText === "TECH") {
+    if (e.target.innerText === 'TECH') {
       this.setState({
         activeList: {
-          allActive: "",
-          techActive: "active",
-          clothActive: "",
+          allActive: '',
+          techActive: 'active',
+          clothActive: '',
         },
       });
 
-      this.context.categoryDispatch(techCat("TECH"));
+      this.context.categoryDispatch(techCat('TECH'));
     }
-    if (e.target.innerText === "CLOTHES") {
+    if (e.target.innerText === 'CLOTHES') {
       this.setState({
         activeList: {
-          allActive: "",
-          techActive: "",
-          clothActive: "active",
+          allActive: '',
+          techActive: '',
+          clothActive: 'active',
         },
       });
 
-      this.context.categoryDispatch(clothCat("CLOTHES"));
+      this.context.categoryDispatch(clothCat('CLOTHES'));
     }
   };
 
@@ -149,32 +149,38 @@ export default class Navbar extends Component {
     this.setState({ showMiniCart: !this.state.showMiniCart });
   };
 
+  closeOverlay = () => {
+    if (this.state.showMiniCart) {
+      this.setState({ showMiniCart: !this.state.showMiniCart });
+    }
+  };
+
   componentDidMount() {
     let category = this.context.categoryState.category;
-    if (category === "ALL") {
+    if (category === 'ALL') {
       this.setState({
         activeList: {
-          allActive: "active",
-          techActive: "",
-          clothActive: "",
+          allActive: 'active',
+          techActive: '',
+          clothActive: '',
         },
       });
     }
-    if (category === "TECH") {
+    if (category === 'TECH') {
       this.setState({
         activeList: {
-          allActive: "",
-          techActive: "active",
-          clothActive: "",
+          allActive: '',
+          techActive: 'active',
+          clothActive: '',
         },
       });
     }
-    if (category === "CLOTHES") {
+    if (category === 'CLOTHES') {
       this.setState({
         activeList: {
-          allActive: "",
-          techActive: "",
-          clothActive: "active",
+          allActive: '',
+          techActive: '',
+          clothActive: 'active',
         },
       });
     }
@@ -196,33 +202,36 @@ export default class Navbar extends Component {
     return (
       <>
         <div className="navbarContainer">
-          <div className="navbar">
+          <div
+            className="navbar"
+            // onClick={() => this.closeOverlay()}
+          >
             <div className="navLeft">
               <ul>
                 <Link to={`/`}>
                   <li
                     className={`navLeftList ${
-                      this.state.activeList.allActive === "active" && "active"
+                      this.state.activeList.allActive === 'active' && 'active'
                     }`}
                     onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
                     ALL
                   </li>
                 </Link>
-                <Link to={"/"}>
+                <Link to={'/'}>
                   <li
                     className={`navLeftList ${
-                      this.state.activeList.techActive === "active" && "active"
+                      this.state.activeList.techActive === 'active' && 'active'
                     }`}
                     onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
                     TECH
                   </li>
                 </Link>
-                <Link to={"/"}>
+                <Link to={'/'}>
                   <li
                     className={`navLeftList ${
-                      this.state.activeList.clothActive === "active" && "active"
+                      this.state.activeList.clothActive === 'active' && 'active'
                     }`}
                     onClick={(e) => this.handleClick(e, this.state.showScroll)}
                   >
@@ -293,7 +302,11 @@ export default class Navbar extends Component {
                 />
                 <span className="cartIconBadge">{cart.length}</span>
                 <div className="miniCartWrapper">
-                  <div className="cartOverlay">
+                  <div
+                    className="cartOverlay"
+                    onClick={() => this.showMiniCart(this.state.showScroll)}
+                  ></div>
+                  {this.state.showMiniCart && (
                     <div className="miniCart">
                       <div className="miniCartTitle">
                         My Bag, <span>{cart.length} item(s)</span>
@@ -310,13 +323,13 @@ export default class Navbar extends Component {
                                 }
                               >
                                 <div className="contentLeft">
-                                  {singleProduct.name.split(" ").slice(0, 1)}
+                                  {singleProduct.name.split(' ').slice(0, 1)}
                                   <br />
                                   <span>
                                     {singleProduct.name
-                                      .split(" ")
+                                      .split(' ')
                                       .slice(1)
-                                      .join(" ")}
+                                      .join(' ')}
                                   </span>
                                   <div className="miniCartProductPrice">
                                     {currency}
@@ -331,7 +344,7 @@ export default class Navbar extends Component {
                                         (attribute) => {
                                           if (
                                             Object.keys(attribute)[0] ===
-                                            "color"
+                                            'color'
                                           ) {
                                             return (
                                               <div
@@ -400,7 +413,7 @@ export default class Navbar extends Component {
                                         onClick={() =>
                                           this.handleQuantity(
                                             singleProduct,
-                                            "inc",
+                                            'inc',
                                             // ProductQuantity,
 
                                             cart.filter(
@@ -417,7 +430,7 @@ export default class Navbar extends Component {
                                         onClick={() =>
                                           this.handleQuantity(
                                             singleProduct,
-                                            "inc",
+                                            'inc',
                                             // ProductQuantity,
 
                                             cart.filter(
@@ -453,7 +466,7 @@ export default class Navbar extends Component {
                                         onClick={() =>
                                           this.handleQuantity(
                                             singleProduct,
-                                            "dec",
+                                            'dec',
                                             // ProductQuantity,
 
                                             cart.filter(
@@ -470,7 +483,7 @@ export default class Navbar extends Component {
                                         onClick={() =>
                                           this.handleQuantity(
                                             singleProduct,
-                                            "dec",
+                                            'dec',
                                             // ProductQuantity,
 
                                             cart.filter(
@@ -506,7 +519,7 @@ export default class Navbar extends Component {
                           </div>
                         </div>
                         <div className="miniCartButtons">
-                          <Link to={"/cart"} className="viewBag">
+                          <Link to={'/cart'} className="viewBag">
                             <div
                               onClick={() =>
                                 this.setViewCart(this.state.showScroll)
@@ -519,7 +532,7 @@ export default class Navbar extends Component {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -529,3 +542,4 @@ export default class Navbar extends Component {
     );
   }
 }
+
