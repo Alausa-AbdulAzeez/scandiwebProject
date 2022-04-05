@@ -1,16 +1,16 @@
-export const toUsd = () => ({
-  type: 'TO_USD',
+export const toUSD = () => ({
+  type: "TO_USD",
 });
-export const toGbp = () => ({
-  type: 'TO_POUNDS',
+export const toGBP = () => ({
+  type: "TO_POUNDS",
 });
-export const toCad = () => ({
-  type: 'TO_CAD',
+export const toAUD = () => ({
+  type: "TO_AUD",
 });
-export const toJpy = () => ({
-  type: 'TO_JPY',
+export const toJPY = () => ({
+  type: "TO_JPY",
 });
-export const toRub = () => ({
-  type: 'TO_RUB',
+export const toRUB = () => ({
+  type: "TO_RUB",
 });
 

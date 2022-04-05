@@ -1,79 +1,216 @@
-import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDown,
   faCartShopping,
   faRefresh,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import './navbar.css';
+import "./navbar.css";
 
+import { Link } from "react-router-dom";
 import {
   allCat,
   clothCat,
   techCat,
-} from '../../context/categoryContext/CategoryActions';
-import { GlobalContext } from '../../context/Provider/Provider';
+} from "../../context/categoryContext/CategoryActions";
+import { GlobalContext } from "../../context/Provider/Provider";
 import {
-  toCad,
-  toGbp,
-  toJpy,
-  toRub,
-  toUsd,
-} from '../../context/currencyChangeContext/CurrencyActions';
-import { Link } from 'react-router-dom';
+  toAUD,
+  toGBP,
+  toJPY,
+  toRUB,
+  toUSD,
+} from "../../context/currencyChangeContext/CurrencyActions";
 import {
   addProduct,
   removeProduct,
-} from '../../context/cartContext/CartActions';
+} from "../../context/cartContext/CartActions";
+import { client } from "../../App";
+import { gql } from "apollo-boost";
+import { getProducts } from "../../context/productsContext/ProductActions";
 
 export default class Navbar extends Component {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
 
     this.state = {
-      quantity: 1,
-      activeList: {
-        allActive: '',
-        techActive: '',
-        clothActive: '',
-      },
       clickedProduct: null,
       disabledRemove: false,
       showScroll: true,
       showMiniCart: false,
-      category: null,
+      categories: null,
+
+      currencies: null,
+      currentCategorySet: "all",
     };
   }
-  static contextType = GlobalContext;
+
+  getCategory = (result) => {
+    this.setState({ categories: result.data.categories });
+  };
+  getCurrencies = (result) => {
+    this.setState({ currencies: result.data.currencies });
+  };
+
+  componentDidMount() {
+    this.get_categories();
+    this.get_currencies();
+    this.get_products();
+    console.log(this.context.categoryState.category.toLowerCase());
+  }
+
+  getProductsAndCategory = (result) => {
+    console.log(this.context.categoryState.category);
+    const { productsDispatch } = this.context;
+    productsDispatch(getProducts({ products: result.data.category.products }));
+    // this.setState({
+    //   currentCategorySet: this.context.categoryState.category.toLowerCase(),
+    // });
+  };
+
+  get_products = async () => {
+    client
+      .query({
+        query: gql`
+          query getCategory {
+            category(input: { title: "${this.context.categoryState.category.toLowerCase()}" }) {
+              name
+              products {
+                id
+                name
+                inStock
+                gallery
+                description
+                category
+                attributes {
+                  id
+                  name
+                  type
+                  items {
+                    displayValue
+                    value
+                    id
+                  }
+                }
+                prices {
+                  currency {
+                    symbol
+                  }
+                  amount
+                }
+                brand
+              }
+            }
+          }
+        `,
+      })
+      .then((result) => {
+        this.context.productsDispatch(
+          getProducts({ products: result.data.category.products })
+        );
+        // localStorage.setItem("cat", this.context.categoryState.category);
+        // this.setState({
+        //   currentCategorySet: this.context.categoryState.category,
+        // });
+      });
+  };
+
+  get_categories = async () => {
+    client
+      .query({
+        query: gql`
+          query getCategory {
+            categories {
+              name
+            }
+          }
+        `,
+      })
+      .then((result) => this.getCategory(result));
+  };
+
+  get_currencies = async () => {
+    client
+      .query({
+        query: gql`
+          query getCurrencies {
+            currencies {
+              label
+              symbol
+            }
+          }
+        `,
+      })
+      .then((result) => this.getCurrencies(result));
+  };
+
+  // Set current link
+
+  handleClick = async (e, showOverflow) => {
+    const { showMiniCart } = this.state;
+    const { categoryDispatch, categoryState } = this.context;
+
+    if (showMiniCart) {
+      this.setViewCart(showOverflow);
+    }
+
+    switch (e.target.innerText) {
+      case "ALL":
+        await categoryDispatch(allCat("ALL"));
+
+        this.get_products();
+        break;
+      case "TECH":
+        await categoryDispatch(techCat("TECH"));
+        this.get_products();
+        break;
+      case "CLOTHES":
+        await categoryDispatch(clothCat("CLOTHES"));
+        this.get_products();
+        break;
+
+      default:
+        categoryDispatch(allCat("ALL"));
+        break;
+    }
+
+    // this.setState({
+    //   currentCategorySet: this.context.categoryState.category,
+    // });
+  };
+
+  // Show miniCart
+  showMiniCart = (showOverflow) => {
+    const { setScroll } = this;
+    const { showMiniCart } = this.state;
+    setScroll(showOverflow);
+    this.setState({ showMiniCart: !showMiniCart });
+  };
+
+  // closeOverlay = () => {
+  //   if (this.state.showMiniCart) {
+  //     this.setState({ showMiniCart: !this.state.showMiniCart });
+  //   }
+  // };
 
   setScroll = (showOverflow) => {
     if (showOverflow === false) {
-      document.body.style.overflow = 'scroll';
+      document.body.style.overflow = "scroll";
     } else {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     }
-    this.setState({ showScroll: !this.state.showScroll });
+    this.setState((prevState) => ({ showScroll: !prevState }));
   };
-
-  // Remove styling from links
-  removeActive = () => {
-    const activeList = document.querySelectorAll('.active');
-    activeList.forEach((item) => item.classList.remove('active'));
-  };
-
-  // Add styling to links
-  addActive = (e) => {
-    e.target.classList.add('active');
-  };
-
-  // Modify product quantity
 
   handleQuantity = (singleProduct, type, ProductQuantity) => {
+    const { cartDispatch } = this.context;
     //  Decrease quantity
-    if (type === 'dec') {
+    if (type === "dec") {
       if (ProductQuantity > 0) {
-        this.context.cartDispatch(
+        cartDispatch(
           removeProduct({
             product: singleProduct,
             price: singleProduct.prices[0].amount,
@@ -87,9 +224,9 @@ export default class Navbar extends Component {
       }
     }
     //  Increase quantity
-    if (type === 'inc') {
+    if (type === "inc") {
       this.setState({ clickedProduct: singleProduct });
-      this.context.cartDispatch(
+      cartDispatch(
         addProduct({
           product: singleProduct,
           price: singleProduct.prices[0].amount,
@@ -103,443 +240,358 @@ export default class Navbar extends Component {
     }
   };
 
-  // Set current link
-  handleClick = (e, showOverflow) => {
-    if (this.state.showMiniCart) {
-      this.setViewCart(showOverflow);
-    }
-    if (e.target.innerText === 'ALL') {
-      this.setState({
-        activeList: {
-          allActive: 'active',
-          techActive: '',
-          clothActive: '',
-        },
-      });
-
-      this.context.categoryDispatch(allCat('ALL'));
-    }
-    if (e.target.innerText === 'TECH') {
-      this.setState({
-        activeList: {
-          allActive: '',
-          techActive: 'active',
-          clothActive: '',
-        },
-      });
-
-      this.context.categoryDispatch(techCat('TECH'));
-    }
-    if (e.target.innerText === 'CLOTHES') {
-      this.setState({
-        activeList: {
-          allActive: '',
-          techActive: '',
-          clothActive: 'active',
-        },
-      });
-
-      this.context.categoryDispatch(clothCat('CLOTHES'));
-    }
-  };
-
-  // Show miniCart
-  showMiniCart = (showOverflow) => {
-    this.setScroll(showOverflow);
-    this.setState({ showMiniCart: !this.state.showMiniCart });
-  };
-
-  closeOverlay = () => {
-    if (this.state.showMiniCart) {
-      this.setState({ showMiniCart: !this.state.showMiniCart });
-    }
-  };
-
-  componentDidMount() {
-    let category = this.context.categoryState.category;
-    if (category === 'ALL') {
-      this.setState({
-        activeList: {
-          allActive: 'active',
-          techActive: '',
-          clothActive: '',
-        },
-      });
-    }
-    if (category === 'TECH') {
-      this.setState({
-        activeList: {
-          allActive: '',
-          techActive: 'active',
-          clothActive: '',
-        },
-      });
-    }
-    if (category === 'CLOTHES') {
-      this.setState({
-        activeList: {
-          allActive: '',
-          techActive: '',
-          clothActive: 'active',
-        },
-      });
-    }
-  }
-
   setViewCart = (showOverflow) => {
-    this.setState({ showMiniCart: !this.state.showMiniCart });
+    // const {showMiniCart} = this.state;
+    this.setState((prevState) => ({ showMiniCart: !prevState }));
     this.setScroll(showOverflow);
+  };
+  switchCurrency = (e, singleCurrency) => {
+    const { currencyDispatch } = this.context;
+
+    switch (e.target.innerText.split(" ")[0]) {
+      case "USD":
+        currencyDispatch(toUSD());
+        break;
+      case "GBP":
+        currencyDispatch(toGBP());
+        break;
+      case "AUD":
+        currencyDispatch(toAUD());
+        break;
+      case "JPY":
+        currencyDispatch(toJPY());
+        break;
+      case "RUB":
+        currencyDispatch(toRUB());
+        break;
+
+      default:
+        currencyDispatch(toUSD());
+        break;
+    }
   };
 
   render() {
     const { currencyDispatch } = this.context;
-    const { baseConverter, currency } = this.context.currencyState;
-    const { cart, total } = this.context.cartState;
-    // const { ProductQuantity } = this.context.quantityState;
+    const { currencyState } = this.context;
+    const { baseConverter, currency } = currencyState;
+    const { cartState, categoryState } = this.context;
+    const { category } = categoryState;
+    // categoryState && localStorage.setItem("cat", category);
+    const { cart, total } = cartState;
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
+    const { showScroll, categories, currentCategorySet, currencies } =
+      this.state;
+    // console.log(category);
+    console.log(currentCategorySet);
 
     return (
-      <>
-        <div className="navbarContainer">
-          <div
-            className="navbar"
-            // onClick={() => this.closeOverlay()}
-          >
-            <div className="navLeft">
-              <ul>
-                <Link to={`/`}>
-                  <li
-                    className={`navLeftList ${
-                      this.state.activeList.allActive === 'active' && 'active'
-                    }`}
-                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
-                  >
-                    ALL
-                  </li>
-                </Link>
-                <Link to={'/'}>
-                  <li
-                    className={`navLeftList ${
-                      this.state.activeList.techActive === 'active' && 'active'
-                    }`}
-                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
-                  >
-                    TECH
-                  </li>
-                </Link>
-                <Link to={'/'}>
-                  <li
-                    className={`navLeftList ${
-                      this.state.activeList.clothActive === 'active' && 'active'
-                    }`}
-                    onClick={(e) => this.handleClick(e, this.state.showScroll)}
-                  >
-                    CLOTHES
-                  </li>
-                </Link>
-              </ul>
-            </div>
-            <div className="navCenter">
-              <FontAwesomeIcon icon={faRefresh} className="bagIcon" />
-            </div>
-            <div className="navRightWrapper">
-              <div className="navRight">
-                <div className="currencySymbol">{currency}</div>
-                <FontAwesomeIcon icon={faAngleDown} className="angleIcon" />
-                <div className="navRightList">
-                  <li
-                    className="currencyList"
-                    onClick={() => {
-                      currencyDispatch(toUsd());
-                    }}
-                  >
-                    USD $
-                  </li>
-                  <li
-                    className="currencyList"
-                    onClick={() => {
-                      currencyDispatch(toGbp());
-                    }}
-                  >
-                    GBP £
-                  </li>
-
-                  <li
-                    className="currencyList"
-                    onClick={() => {
-                      currencyDispatch(toCad());
-                    }}
-                  >
-                    CAD A$
-                  </li>
-                  <li
-                    className="currencyList"
-                    onClick={() => {
-                      currencyDispatch(toJpy());
-                    }}
-                  >
-                    JPY ¥
-                  </li>
-                  <li
-                    className="currencyList"
-                    onClick={() => {
-                      currencyDispatch(toRub());
-                    }}
-                  >
-                    RUB ₽
-                  </li>
-                </div>
+      <div className="navbarContainer">
+        <div
+          className="navbar"
+          // onClick={() => this.closeOverlay()}
+        >
+          <div className="navLeft">
+            <ul>
+              {categories &&
+                categories.map((category) => {
+                  console.log(category);
+                  return (
+                    <Link to="/" key={category.name}>
+                      <li>
+                        <div
+                          role="link"
+                          tabIndex={0}
+                          className={`navLeftList ${
+                            category.name ===
+                              currentCategorySet.toLowerCase() && "active"
+                          }`}
+                          onClick={(e) => this.handleClick(e, showScroll)}
+                          // onKeyDown={(e) => this.handleClick(e, showScroll)}
+                        >
+                          {category.name.toUpperCase()}
+                        </div>
+                      </li>
+                    </Link>
+                  );
+                })}
+            </ul>
+          </div>
+          <div className="navCenter">
+            <FontAwesomeIcon icon={faRefresh} className="bagIcon" />
+          </div>
+          <div className="navRightWrapper">
+            <div className="navRight">
+              <div className="currencySymbol">{currency}</div>
+              <FontAwesomeIcon icon={faAngleDown} className="angleIcon" />
+              <div className="navRightList">
+                {currencies &&
+                  currencies.map((singleCurrency) => {
+                    return (
+                      <li key={singleCurrency.label} className="currencyList">
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          // className="currencyList"
+                          onClick={(e) =>
+                            this.switchCurrency(e, singleCurrency.label)
+                          }
+                          // onKeyDown={() => {
+                          //   currencyDispatch(`to${currency.label}`());
+                          // }}
+                        >
+                          {singleCurrency.label} {singleCurrency.symbol}
+                        </div>
+                      </li>
+                    );
+                  })}
               </div>
-              <div
-                className="cartIconContainer"
-                showminicart={this.state.showMiniCart.toString()}
-              >
-                <FontAwesomeIcon
-                  icon={faCartShopping}
-                  className="cartIcon"
+            </div>
+            <div
+              className="cartIconContainer"
+              showminicart={this.state.showMiniCart.toString()}
+            >
+              <FontAwesomeIcon
+                icon={faCartShopping}
+                className="cartIcon"
+                onClick={() => this.showMiniCart(this.state.showScroll)}
+              />
+              <span className="cartIconBadge">{cart.length}</span>
+              <div className="miniCartWrapper">
+                <div
+                  className="cartOverlay"
                   onClick={() => this.showMiniCart(this.state.showScroll)}
-                />
-                <span className="cartIconBadge">{cart.length}</span>
-                <div className="miniCartWrapper">
-                  <div
-                    className="cartOverlay"
-                    onClick={() => this.showMiniCart(this.state.showScroll)}
-                  ></div>
-                  {this.state.showMiniCart && (
-                    <div className="miniCart">
-                      <div className="miniCartTitle">
-                        My Bag, <span>{cart.length} item(s)</span>
-                      </div>
-                      <div className="miniCartContents">
-                        {dispContent.length > 0 ? (
-                          dispContent.map((singleProduct) => {
-                            return (
-                              <div
-                                className="miniCartContent"
-                                key={
-                                  new Date().valueOf().toString(36) +
-                                  Math.random().toString(36).substr(2)
-                                }
-                              >
-                                <div className="contentLeft">
-                                  {singleProduct.name.split(' ').slice(0, 1)}
-                                  <br />
-                                  <span>
-                                    {singleProduct.name
-                                      .split(' ')
-                                      .slice(1)
-                                      .join(' ')}
-                                  </span>
-                                  <div className="miniCartProductPrice">
-                                    {currency}
-                                    {(
-                                      singleProduct.prices[0].amount *
-                                      baseConverter
-                                    ).toFixed(2)}
-                                  </div>
-                                  <div className="miniCartProductSizes">
-                                    {singleProduct.attributes.length > 0 &&
-                                      singleProduct.attributes.map(
-                                        (attribute) => {
-                                          if (
-                                            Object.keys(attribute)[0] ===
-                                            'color'
-                                          ) {
-                                            return (
-                                              <div
-                                                className=" selecTedColorWrapper"
-                                                key={
-                                                  new Date()
-                                                    .valueOf()
-                                                    .toString(36) +
-                                                  Math.random()
-                                                    .toString(36)
-                                                    .substr(2)
-                                                }
-                                              >
-                                                <div
-                                                  className="miniProductDisplayColor"
-                                                  style={{
-                                                    backgroundColor: `${Object.values(
-                                                      attribute
-                                                    )}`,
-                                                  }}
-                                                  key={
-                                                    new Date()
-                                                      .valueOf()
-                                                      .toString(36) +
-                                                    Math.random()
-                                                      .toString(36)
-                                                      .substr(2)
-                                                  }
-                                                ></div>
-                                              </div>
-                                            );
-                                          } else {
-                                            return (
-                                              <div
-                                                className="attributesWrapper"
-                                                key={
-                                                  new Date()
-                                                    .valueOf()
-                                                    .toString(36) +
-                                                  Math.random()
-                                                    .toString(36)
-                                                    .substr(2)
-                                                }
-                                              >
-                                                <p className="attributeTitle">
-                                                  {Object.keys(attribute)}
-                                                </p>
-
-                                                <div className="miniCartProductSize">
-                                                  {Object.values(attribute)}
-                                                </div>
-                                              </div>
-                                            );
-                                          }
-                                        }
-                                      )}
-                                  </div>
+                ></div>
+                {this.state.showMiniCart && (
+                  <div className="miniCart">
+                    <div className="miniCartTitle">
+                      My Bag, <span>{cart.length} item(s)</span>
+                    </div>
+                    <div className="miniCartContents">
+                      {dispContent.length > 0 ? (
+                        dispContent.map((singleProduct) => {
+                          return (
+                            <div
+                              className="miniCartContent"
+                              key={
+                                new Date().valueOf().toString(36) +
+                                Math.random().toString(36).substr(2)
+                              }
+                            >
+                              <div className="contentLeft">
+                                {singleProduct.name.split(" ").slice(0, 1)}
+                                <br />
+                                <span>
+                                  {singleProduct.name
+                                    .split(" ")
+                                    .slice(1)
+                                    .join(" ")}
+                                </span>
+                                <div className="miniCartProductPrice">
+                                  {currency}
+                                  {(
+                                    singleProduct.prices[0].amount *
+                                    baseConverter
+                                  ).toFixed(2)}
                                 </div>
-                                <div className="contentRight">
-                                  <div className="variationSet">
-                                    {this.state.clickedProduct ===
-                                    singleProduct ? (
-                                      <button
-                                        disabled={this.state.disabledRemove}
-                                        className="variationAdd"
-                                        onClick={() =>
-                                          this.handleQuantity(
-                                            singleProduct,
-                                            'inc',
-                                            // ProductQuantity,
+                                <div className="miniCartProductSizes">
+                                  {singleProduct.attributes.length > 0 &&
+                                    singleProduct.attributes.map(
+                                      (attribute) => {
+                                        if (
+                                          Object.keys(attribute)[0] === "color"
+                                        ) {
+                                          return (
+                                            <div
+                                              className=" selecTedColorWrapper"
+                                              key={
+                                                new Date()
+                                                  .valueOf()
+                                                  .toString(36) +
+                                                Math.random()
+                                                  .toString(36)
+                                                  .substr(2)
+                                              }
+                                            >
+                                              <div
+                                                className="miniProductDisplayColor"
+                                                style={{
+                                                  backgroundColor: `${Object.values(
+                                                    attribute
+                                                  )}`,
+                                                }}
+                                                key={
+                                                  new Date()
+                                                    .valueOf()
+                                                    .toString(36) +
+                                                  Math.random()
+                                                    .toString(36)
+                                                    .substr(2)
+                                                }
+                                              ></div>
+                                            </div>
+                                          );
+                                        } else {
+                                          return (
+                                            <div
+                                              className="attributesWrapper"
+                                              key={
+                                                new Date()
+                                                  .valueOf()
+                                                  .toString(36) +
+                                                Math.random()
+                                                  .toString(36)
+                                                  .substr(2)
+                                              }
+                                            >
+                                              <p className="attributeTitle">
+                                                {Object.keys(attribute)}
+                                              </p>
 
-                                            cart.filter(
-                                              (v) => v === singleProduct
-                                            ).length
-                                          )
+                                              <div className="miniCartProductSize">
+                                                {Object.values(attribute)}
+                                              </div>
+                                            </div>
+                                          );
                                         }
-                                      >
-                                        +
-                                      </button>
-                                    ) : (
-                                      <button
-                                        className="variationAdd"
-                                        onClick={() =>
-                                          this.handleQuantity(
-                                            singleProduct,
-                                            'inc',
-                                            // ProductQuantity,
-
-                                            cart.filter(
-                                              (v) => v === singleProduct
-                                            ).length
-                                          )
-                                        }
-                                      >
-                                        +
-                                      </button>
+                                      }
                                     )}
+                                </div>
+                              </div>
+                              <div className="contentRight">
+                                <div className="variationSet">
+                                  {this.state.clickedProduct ===
+                                  singleProduct ? (
+                                    <button
+                                      disabled={this.state.disabledRemove}
+                                      className="variationAdd"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "inc",
+                                          // ProductQuantity,
 
-                                    <div className="variationQuantity">
-                                      {this.state.disabledRemove ? (
-                                        this.state.clickedProduct ===
-                                        singleProduct ? (
-                                          <div className="loader"></div>
-                                        ) : (
                                           cart.filter(
                                             (v) => v === singleProduct
                                           ).length
                                         )
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="variationAdd"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "inc",
+                                          // ProductQuantity,
+
+                                          cart.filter(
+                                            (v) => v === singleProduct
+                                          ).length
+                                        )
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  )}
+
+                                  <div className="variationQuantity">
+                                    {this.state.disabledRemove ? (
+                                      this.state.clickedProduct ===
+                                      singleProduct ? (
+                                        <div className="loader"></div>
                                       ) : (
                                         cart.filter((v) => v === singleProduct)
                                           .length
-                                      )}
-                                    </div>
-                                    {this.state.clickedProduct ===
-                                    singleProduct ? (
-                                      <button
-                                        disabled={this.state.disabledRemove}
-                                        className="variationRemove"
-                                        onClick={() =>
-                                          this.handleQuantity(
-                                            singleProduct,
-                                            'dec',
-                                            // ProductQuantity,
-
-                                            cart.filter(
-                                              (v) => v === singleProduct
-                                            ).length
-                                          )
-                                        }
-                                      >
-                                        -
-                                      </button>
+                                      )
                                     ) : (
-                                      <button
-                                        className="variationRemove"
-                                        onClick={() =>
-                                          this.handleQuantity(
-                                            singleProduct,
-                                            'dec',
-                                            // ProductQuantity,
-
-                                            cart.filter(
-                                              (v) => v === singleProduct
-                                            ).length
-                                          )
-                                        }
-                                      >
-                                        -
-                                      </button>
+                                      cart.filter((v) => v === singleProduct)
+                                        .length
                                     )}
                                   </div>
-                                  <div className="miniCartImg">
-                                    <img
-                                      src={singleProduct.gallery[0]}
-                                      alt=""
-                                    />
-                                  </div>
+                                  {this.state.clickedProduct ===
+                                  singleProduct ? (
+                                    <button
+                                      disabled={this.state.disabledRemove}
+                                      className="variationRemove"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "dec",
+                                          // ProductQuantity,
+
+                                          cart.filter(
+                                            (v) => v === singleProduct
+                                          ).length
+                                        )
+                                      }
+                                    >
+                                      -
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="variationRemove"
+                                      onClick={() =>
+                                        this.handleQuantity(
+                                          singleProduct,
+                                          "dec",
+                                          // ProductQuantity,
+
+                                          cart.filter(
+                                            (v) => v === singleProduct
+                                          ).length
+                                        )
+                                      }
+                                    >
+                                      -
+                                    </button>
+                                  )}
+                                </div>
+                                <div className="miniCartImg">
+                                  <img src={singleProduct.gallery[0]} alt="" />
                                 </div>
                               </div>
-                            );
-                          })
-                        ) : (
-                          <div className="miniCartTotal">Cart is empty</div>
-                        )}
-                      </div>
-                      <div className="miniCartFooter">
-                        <div className="miniCartTotal">
-                          <div className="totalText">Total</div>
-                          <div className="totalDigit">
-                            {currency}
-                            {(total * baseConverter).toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="miniCartButtons">
-                          <Link to={'/cart'} className="viewBag">
-                            <div
-                              onClick={() =>
-                                this.setViewCart(this.state.showScroll)
-                              }
-                            >
-                              VIEW BAG
                             </div>
-                          </Link>
-                          <div className="checkOut">CHECKOUT</div>
+                          );
+                        })
+                      ) : (
+                        <div className="miniCartTotal">Cart is empty</div>
+                      )}
+                    </div>
+                    <div className="miniCartFooter">
+                      <div className="miniCartTotal">
+                        <div className="totalText">Total</div>
+                        <div className="totalDigit">
+                          {currency}
+                          {(total * baseConverter).toFixed(2)}
                         </div>
+                      </div>
+                      <div className="miniCartButtons">
+                        <Link to={"/cart"} className="viewBag">
+                          <div
+                            onClick={() =>
+                              this.setViewCart(this.state.showScroll)
+                            }
+                          >
+                            VIEW BAG
+                          </div>
+                        </Link>
+                        <div className="checkOut">CHECKOUT</div>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }
+// Navbar.contextType = GlobalContext;
 

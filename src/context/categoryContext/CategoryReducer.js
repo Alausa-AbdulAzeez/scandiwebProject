@@ -20,3 +20,4 @@ const CategoryReducer = (state, action) => {
 };
 
 export default CategoryReducer;
+

@@ -1,19 +1,19 @@
-import { gql } from 'apollo-boost';
-import React, { Component } from 'react';
-import parse from 'html-react-parser';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { client } from '../../App';
-import Navbar from '../../components/navbar/Navbar';
-import { GlobalContext } from '../../context/Provider/Provider';
-import './product.css';
+import { gql } from "apollo-boost";
+import React, { Component } from "react";
+import parse from "html-react-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { client } from "../../App";
+import Navbar from "../../components/navbar/Navbar";
+import { GlobalContext } from "../../context/Provider/Provider";
+import "./product.css";
 import {
   addProduct,
   removeProduct,
-} from '../../context/cartContext/CartActions';
+} from "../../context/cartContext/CartActions";
 
-import 'react-slideshow-image/dist/styles.css';
+import "react-slideshow-image/dist/styles.css";
 // import SimpleImageSlider from 'react-simple-image-slider';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 // import { increaseProductAmount } from "../../context/quantityContext/QuantityActions";
 {
   /* <link rel="stylesheet" href="carousel.css" />; */
@@ -26,7 +26,7 @@ export default class Product extends Component {
     this.state = {
       product: null,
       productInCart: null,
-      id: window.location.href.split('/')[3],
+      id: window.location.href.split("/")[3],
       disabled: true,
       arr: [],
       varArr: [],
@@ -82,19 +82,19 @@ export default class Product extends Component {
 
   // Remove style from selected attribute
   removeColor = () => {
-    const colorList = document.querySelectorAll('.selectedColor');
-    colorList.forEach((item) => item.classList.remove('selectedColor'));
+    const colorList = document.querySelectorAll(".selectedColor");
+    colorList.forEach((item) => item.classList.remove("selectedColor"));
   };
 
   // Add Remove style to selected attribute
   addColor = (e) => {
-    e.target.classList.add('selectedColor');
+    e.target.classList.add("selectedColor");
   };
 
   // Remove attribute
   removeAttribute = (attribute) => {
     let className = `selected${attribute}`;
-    let modClassName = className.split(' ').join('');
+    let modClassName = className.split(" ").join("");
     const sizeList = document.querySelectorAll(`.${modClassName}`);
     sizeList.forEach((item) => item.classList.remove(`${modClassName}`));
   };
@@ -103,14 +103,14 @@ export default class Product extends Component {
   addAttribute = (e, attribute) => {
     this.setState({ att: [...this.state.att, attribute] });
     let className = `selected${attribute}`;
-    let modClassName = className.split(' ').join('');
+    let modClassName = className.split(" ").join("");
     e.target.classList.add(`${modClassName}`);
   };
 
   // Select attribute(s)
   selectAttribute = (product, e, attribute, type) => {
     // While selecting attributes from PDP
-    if (type === 'default') {
+    if (type === "default") {
       this.removeAttribute(attribute);
       this.addAttribute(e, attribute);
       this.setState({
@@ -140,7 +140,7 @@ export default class Product extends Component {
   // Seletc Color Type
   selectColor = (product, e, value, type) => {
     // While selecting attributes from PDP
-    if (type === 'default') {
+    if (type === "default") {
       this.removeColor();
       this.addColor(e);
       this.setState({
@@ -214,7 +214,7 @@ export default class Product extends Component {
     cart
   ) => {
     //  Decrease quantity
-    if (type === 'dec') {
+    if (type === "dec") {
       if (quantityInCart > 0) {
         this.context.cartDispatch(
           removeProduct({
@@ -230,7 +230,7 @@ export default class Product extends Component {
       }
     }
     //  Increase quantity
-    if (type === 'inc') {
+    if (type === "inc") {
       // If product has no attribute
       if (singleProduct.attributes.length === 0) {
         let itemInCart = cart.find(
@@ -288,15 +288,15 @@ export default class Product extends Component {
 
   // show the variation overlay
   showOverlay = () => {
-    document.body.style.overflow = 'hidden';
-    const overlay = document.querySelector('.variationContainer');
-    overlay.classList.add('show');
+    document.body.style.overflow = "hidden";
+    const overlay = document.querySelector(".variationContainer");
+    overlay.classList.add("show");
   };
   // show the variation overlay
   removeOverlay = () => {
-    document.body.style.overflowY = 'scroll';
-    const overlay = document.querySelector('.variationContainer');
-    overlay.classList.remove('show');
+    document.body.style.overflowY = "scroll";
+    const overlay = document.querySelector(".variationContainer");
+    overlay.classList.remove("show");
   };
 
   // Set attributes of the selected product
@@ -333,7 +333,7 @@ export default class Product extends Component {
     const { ProductQuantity } = this.context.quantityState;
     const dispContentSet = new Set(cart);
     const dispContent = Array.from(dispContentSet);
-    console.log(this.state.product);
+    // console.log(this.state.product);
 
     return (
       <>
@@ -364,7 +364,7 @@ export default class Product extends Component {
                 {this.state.product &&
                   this.state.product.attributes.length > 0 &&
                   this.state.product.attributes.map((attribute) => {
-                    if (attribute.id === 'Color') {
+                    if (attribute.id === "Color") {
                       return (
                         <div
                           className="variationProductColorWrapper"
@@ -389,7 +389,7 @@ export default class Product extends Component {
                                       this.state.product,
                                       e,
                                       value,
-                                      'variation'
+                                      "variation"
                                     )
                                   }
                                 ></div>
@@ -416,7 +416,7 @@ export default class Product extends Component {
                                     this.state.product,
                                     e,
                                     attribute.id,
-                                    'variation'
+                                    "variation"
                                   )
                                 }
                                 key={item.id}
@@ -442,13 +442,13 @@ export default class Product extends Component {
                             }
                           >
                             <div className="contentLeft">
-                              {singleProduct.name.split(' ').slice(0, 1)}
+                              {singleProduct.name.split(" ").slice(0, 1)}
                               <br />
                               <span>
                                 {singleProduct.name
-                                  .split(' ')
+                                  .split(" ")
                                   .slice(1)
-                                  .join(' ')}
+                                  .join(" ")}
                               </span>
                               <div className="miniCartProductPrice">
                                 {currency}
@@ -459,7 +459,7 @@ export default class Product extends Component {
                               <div className="miniCartProductSizes">
                                 {singleProduct.attributes.length > 0 &&
                                   singleProduct.attributes.map((attribute) => {
-                                    if (Object.keys(attribute)[0] === 'color') {
+                                    if (Object.keys(attribute)[0] === "color") {
                                       return (
                                         <div
                                           className=" selecTedColorWrapper"
@@ -517,7 +517,7 @@ export default class Product extends Component {
                                     onClick={() =>
                                       this.ProdhandleQuantity(
                                         singleProduct,
-                                        'inc',
+                                        "inc",
                                         ProductQuantity,
 
                                         cart.filter((v) => v === singleProduct)
@@ -533,7 +533,7 @@ export default class Product extends Component {
                                     onClick={() =>
                                       this.ProdhandleQuantity(
                                         singleProduct,
-                                        'inc',
+                                        "inc",
                                         ProductQuantity,
 
                                         cart.filter((v) => v === singleProduct)
@@ -566,7 +566,7 @@ export default class Product extends Component {
                                     onClick={() =>
                                       this.ProdhandleQuantity(
                                         singleProduct,
-                                        'dec',
+                                        "dec",
                                         ProductQuantity,
 
                                         cart.filter((v) => v === singleProduct)
@@ -582,7 +582,7 @@ export default class Product extends Component {
                                     onClick={() =>
                                       this.ProdhandleQuantity(
                                         singleProduct,
-                                        'dec',
+                                        "dec",
                                         ProductQuantity,
 
                                         cart.filter((v) => v === singleProduct)
@@ -616,7 +616,7 @@ export default class Product extends Component {
             <div className="productContainer">
               <div className="productContainerLeft">
                 {this.state.product.gallery.map((singleImage) => {
-                  console.log(singleImage);
+                  // console.log(singleImage);
                   return (
                     <div
                       className="smallImage"
@@ -650,17 +650,17 @@ export default class Product extends Component {
               </div>
               <div className="productContainerRight">
                 <div className="productTitle">
-                  {this.state.product.name.split(' ').slice(0, 1)}
+                  {this.state.product.name.split(" ").slice(0, 1)}
                   <br />
                   <span>
-                    {this.state.product.name.split(' ').slice(1).join(' ')}
+                    {this.state.product.name.split(" ").slice(1).join(" ")}
                   </span>
                 </div>
                 <div className="productSizes">
                   <h5>Please select desired specification(s)</h5>
                   {this.state.product.attributes.length > 0 &&
                     this.state.product.attributes.map((attribute) => {
-                      if (attribute.id === 'Color') {
+                      if (attribute.id === "Color") {
                         return (
                           <div
                             className="productColorWrapper"
@@ -682,7 +682,7 @@ export default class Product extends Component {
                                         this.state.product,
                                         e,
                                         value,
-                                        'default'
+                                        "default"
                                       )
                                     }
                                   ></div>
@@ -707,7 +707,7 @@ export default class Product extends Component {
                                       this.state.product,
                                       e,
                                       attribute.id,
-                                      'default'
+                                      "default"
                                     )
                                   }
                                   key={item.id}
@@ -740,7 +740,7 @@ export default class Product extends Component {
                           onClick={(e) =>
                             this.ProdhandleQuantity(
                               this.state.product,
-                              'inc',
+                              "inc",
                               e,
                               ProductQuantity,
                               cart
@@ -759,7 +759,7 @@ export default class Product extends Component {
                           onClick={(e) =>
                             this.ProdhandleQuantity(
                               this.state.product,
-                              'dec',
+                              "dec",
                               e,
                               ProductQuantity
                             )
